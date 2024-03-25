@@ -44,6 +44,11 @@
     citecolor=black
 }
 
+% stattotex commands
+\input{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Average.tex}
+\input{../Output/All Data EDA/Tabular EDA/num_companies_and_quarters.tex}
+\input{../Output/All Data EDA/NLP EDA/avg_call_length.tex}
+
 \begin{document}
 
 	\maketitle
@@ -101,6 +106,10 @@
 
     Remove all calls that happened more than 250 days prior and after the fixed quarter date
 
+    overall average call length stat
+
+    \avgCallLength
+
     \begin{figure}[h!]
 		\centering
         \caption{Number of Words in Earnings Calls}
@@ -126,7 +135,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Altman Z-Score}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data.png}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
 	\end{figure}    
 
     \subsection*{Sector}
@@ -148,6 +157,10 @@
     Data is at the level of
 
     XXX quarters, XXX companies
+
+    \numQuarters
+
+    \numCompanies
 
     temporal imbalance
 
@@ -184,7 +197,7 @@
     Our overall model architecture is of the form
 
     \begin{equation*}
-        \hat{\text{Credit Rating}} = f(\text{Financial Statement Variables}, \text{Sector}, \text{NLP Features})
+        \text{Predicted Credit Rating} = f(\text{Financial Statement Variables}, \text{Sector}, \text{NLP Features})
     \end{equation*}
 
     functions began with logistic regression
@@ -222,6 +235,8 @@
         \caption{Company Mentions}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
 	\end{figure}
+
+    \avgCompanyMentions
 
     Fine tune the pre-trained LLMs for NLP feature construction
     
