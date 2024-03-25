@@ -50,20 +50,69 @@
 
     \section*{Introduction}
 
-    note credit rating data access is limited and our model can be used to interpolate
-    
-    \section*{Data}
+    high-level subject area info
 
     \citep{das_credit_2023}
+
+    problem statement and question
+
+    impact and value
+
+    note credit rating data access is limited and our model can be used to interpolate
+
+    high level data description
+
+    roadmap
+    we then
+
+    \section*{Data}
+
+    sources
+
+    API access for calls and financial data, kaggle for credit ratings
+
+    CSV files but now we use parquets for efficient storage
+
+    description of merging data and getting to fixed quarter date level
+
+    quality control
+    code review of all data cleaning code
+    numerous investigations
+
+    \section*{Exploratory Data Analysis}
 
 	\begin{figure}[h!]
 		\centering
         \includegraphics[width=\linewidth,keepaspectratio=true]{../Output/all_data_fixed_quarter_dates_firms_by_sector.png}
 	\end{figure}
-    
-    \section*{Conclusion}
 
-    Overall, there may be some merit to current arguments suggesting the presence of political costs and benefits of welfare-enhancing commitment institutions such as central bank independence and fixed exchange rates. This suggests some role for the political economy analysis of the choice of these institutions.
+    sectoral imbalance
+
+    outliers and errors
+
+    correlations and patterns
+
+    identification of good machine learning methods
+
+    \section*{Modelling}
+
+    began with logistic regression
+
+    fitting and output
+
+    assumptions
+    
+    interpretation
+
+    \section*{Next Steps}
+
+    more classifiers
+
+    Graph Neural Network incorporating the relationships between companies, trained end-to-end with both tabular financial data and NLP features
+    
+    Fine tune the pre-trained LLMs for NLP feature construction
+    
+    Ensembling and Auto-ML
     
     \clearpage
     \newpage
