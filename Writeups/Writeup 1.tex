@@ -69,7 +69,7 @@
     roadmap
     we then
 
-    \section*{Data}
+    \section*{Data and Exploratory Data Analysis}
 
     sources
 
@@ -87,6 +87,12 @@
 
     BBB and above is investment grade (one-year default ~0 to 1\%), below is junk (1 to 30, 40, 50\%)
 
+    \begin{figure}[h!]
+		\centering
+        \caption{Credit Ratings}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+	\end{figure}
+
     \subsection*{Earnings Calls}
 
     API source
@@ -94,6 +100,12 @@
     Quarterly conference call transcripts that contains speaker remarks and Q and A session from 2010 - 2016.
 
     Remove all calls that happened more than 250 days prior and after the fixed quarter date
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Number of Words in Earnings Calls}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_num_words_distribution_no_title.png}
+	\end{figure}
 
     \subsection*{Financial Statements}
 
@@ -111,7 +123,11 @@
 
     Construct Altman Z-score
 
-    Pic describing Z-score
+    \begin{figure}[h!]
+		\centering
+        \caption{Altman Z-Score}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data.png}
+	\end{figure}    
 
     \subsection*{Sector}
 
@@ -119,11 +135,27 @@
 
     Obtained from Kaggle with supplementary manual lookup
 
+    \begin{figure}[h!]
+		\centering
+        \caption{Firms by Sector}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+	\end{figure}
+
+    sectoral imbalance
+
     \subsection*{Merged Data}
 
     Data is at the level of
 
     XXX quarters, XXX companies
+
+    temporal imbalance
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Observations by Quarter and Year}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+	\end{figure}
 
     \subsection*{Quality Control}
 
@@ -133,14 +165,13 @@
 
     \section*{NLP Features}
 
-    \section*{Exploratory Data Analysis}
+    Average call length
 
-	\begin{figure}[h!]
+    \begin{figure}[h!]
 		\centering
-        \includegraphics[width=\linewidth,keepaspectratio=true]{../Output/all_data_fixed_quarter_dates_firms_by_sector.png}
+        \caption{Average Call Length by Credit Rating}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_call_length_by_credit_rating_no_title.png}
 	\end{figure}
-
-    sectoral imbalance
 
     outliers and errors
 
@@ -172,6 +203,8 @@
 
     \section*{Next Steps}
 
+    Ensembling and Auto-ML
+
     more classifiers
     
     first steps using AutoML
@@ -184,9 +217,13 @@
 
     Graph Neural Network incorporating the relationships between companies, trained end-to-end with both tabular financial data and NLP features
     
+    \begin{figure}[h!]
+		\centering
+        \caption{Company Mentions}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
+	\end{figure}
+
     Fine tune the pre-trained LLMs for NLP feature construction
-    
-    Ensembling and Auto-ML
     
     \clearpage
     \newpage
