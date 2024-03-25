@@ -1,10 +1,21 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
 
-\bibitem[\protect\citeauthoryear{Das, Huang, Adeshina, Yang, and Bachega}{Das
-  et~al.}{2023}]{das_credit_2023}
-Das, S., X.~Huang, S.~Adeshina, P.~Yang, and L.~Bachega (2023, October).
+\bibitem{das_credit_2023}
+Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo Bachega.
 \newblock Credit {Risk} {Modeling} with {Graph} {Machine} {Learning}.
-\newblock {\em INFORMS Journal on Data Science\/}~{\em 2\/}(2), 197--217.
+\newblock {\em INFORMS Journal on Data Science}, 2(2):197--217, October 2023.
 \newblock Publisher: INFORMS.
+
+\bibitem{gewerc_corporate_2020}
+Alan Gewerc.
+\newblock Corporate {Credit} {Rating} with {Financial} {Ratios}, July 2020.
+
+\bibitem{makwana_corporate_2022}
+Ravi Makwana, Dhruvil Bhatt, and Kirtan Delwadia.
+\newblock Corporate {Credit} {Rating}, June 2022.
+
+\bibitem{s_and_p_global_ratings_s_2024}
+{S and P Global Ratings}.
+\newblock S and {P} {Global} {Ratings}, 2024.
 
 \end{thebibliography}

@@ -46,7 +46,7 @@
 
 % stattotex commands
 \input{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Average.tex}
-\input{../Output/All Data EDA/Tabular EDA/num_companies_and_quarters.tex}
+\input{../Output/All Data EDA/Tabular EDA/num_quarters_and_companies.tex}
 \input{../Output/All Data EDA/NLP EDA/avg_call_length.tex}
 
 \begin{document}
@@ -61,13 +61,13 @@
 
     problem statement and question
 
-    Can incorporating the text of earnings calls improve predictions of corporate credit ratings?
-
     Company ratings and creditworthiness are important information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy.
 
     Are ratings based on hard numbers, or do company outlooks and sentiment also matter? Are they predictable?
 
     note credit rating data access is limited and our model can be used to interpolate
+
+    In this project, we seek to explore whether incorporating the text of earnings calls improves predictions of corporate credit ratings.
 
     high level data description
 
@@ -76,26 +76,33 @@
 
     \section*{Data and Exploratory Data Analysis}
 
-    sources
+    We combine a wide variety of data sources to support our predictions of credit ratings. Our scope of interest publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). All data not from APIs was received as CSV or Excel files, which we converted to parquet files for efficient intermediate data storage throughout the project.
 
-    all data formats come as CSV though we use parquet files for efficient intermediate data storage throughout the project
+    Data is at the level of
+
+    In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+
+    temporal imbalance
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Observations by Quarter and Year}
+        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+	\end{figure}
 
     \subsection*{Credit Ratings}
 
-    Long-term credit rating issuances from S and P Rating Services, 2010-2016
+    We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}.
 
-    Combination of Kaggle datasets
+    Each issuance be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals.
 
-    Can be a change in rating (upgrade, downgrade) or reaffirmation
-
-    Finer grades (+, -) sometimes assigned but removed for this project
-
-    BBB and above is investment grade (one-year default ~0 to 1\%), below is junk (1 to 30, 40, 50\%)
+    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were removed for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of ~0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum.
 
     \begin{figure}[h!]
 		\centering
         \caption{Credit Ratings}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+        \label{fig:credit-ratings}
 	\end{figure}
 
     \subsection*{Earnings Calls}
@@ -106,9 +113,7 @@
 
     Remove all calls that happened more than 250 days prior and after the fixed quarter date
 
-    overall average call length stat
-
-    \avgCallLength
+    The overall average call length stands at \avgCallLength words.
 
     \begin{figure}[h!]
 		\centering
@@ -150,25 +155,7 @@
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
 	\end{figure}
 
-    sectoral imbalance
-
-    \subsection*{Merged Data}
-
-    Data is at the level of
-
-    XXX quarters, XXX companies
-
-    \numQuarters
-
-    \numCompanies
-
-    temporal imbalance
-
-    \begin{figure}[h!]
-		\centering
-        \caption{Observations by Quarter and Year}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
-	\end{figure}
+    sectoral imbalance    
 
     \subsection*{Quality Control}
 
@@ -230,13 +217,13 @@
 
     Graph Neural Network incorporating the relationships between companies, trained end-to-end with both tabular financial data and NLP features
     
-    \begin{figure}[h!]
-		\centering
-        \caption{Company Mentions}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
-	\end{figure}
-
-    \avgCompanyMentions
+    % REDO for companies that aren't the company giving the call...
+    %On average, each earnings call has \avgCompanyMentions company mentions (though we have not yet distinguished between mentions of the company giving the call and other companies).
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{Company Mentions}
+    %     \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
+	% \end{figure}
 
     Fine tune the pre-trained LLMs for NLP feature construction
     
@@ -246,11 +233,11 @@
     \bibliographystyle{chicago}
     \bibliography{Stat-222-Capstone}
 
-    \clearpage
-    \newpage
+    % \clearpage
+    % \newpage
 
-    \appendix
+    % \appendix
 
-    \section*{Appendix}
+    % \section*{Appendix}
 
 \end{document}
