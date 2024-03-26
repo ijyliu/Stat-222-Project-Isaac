@@ -57,34 +57,19 @@
 
     \section*{Introduction}
 
-    high-level subject area info
+    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors (there is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}), and by any parties seeking interpolated ratings for companies that do not have them.
 
-    \citep{das_credit_2023}
+    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences. Textual features such as pre-trained language model vector embeddings \citep{araci_finbert_2019} and analyses of sentiment accompany tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. If time allows, we will also incorporate advances in the study of graph neural networks to create additional embeddings modelling linkages between firms \citep{das_credit_2023} implied by calls.
 
-    problem statement and question
+    Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information. % Potentially remove paragraph
 
-    Company ratings and creditworthiness are important information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy.
-
-    Are ratings based on hard numbers, or do company outlooks and sentiment also matter? Are they predictable?
-
-    note credit rating data access is limited and our model can be used to interpolate
-
-    In this project, we seek to explore whether incorporating the text of earnings calls improves predictions of corporate credit ratings.
-
-    high level data description
-
-    Though much literature has focused on financial statements and reports and credit ratings (CITATIONS HERE), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Prior work has recognized the 'wisdom of the crowd' in making predictions, and our approach fully accounts for it, going beyond the proclamations of a company's management.
-
-    Calls also require less parsing - no looking for specific section of financial statement reports.
-
-    roadmap
-    we then
+    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades using unigram and bigram frequencies and the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more techniques from machine learning such as the power of pre-trained language models and a wider variety of algorithms for classification.
 
     \section*{Data and Exploratory Data Analysis}
 
-    We combine a wide variety of data sources to support our predictions of credit ratings - combining rating data with company earnings calls, financial statement variables, and industry sector. In our final dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
+    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our final dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
 
-    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). The data is temporally unbalanced, with many companies entering the dataset in later years after they first receive an observable credit rating (Figure \ref{fig:obs-by-quarter-year}).
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). The data is temporally unbalanced, with many companies entering the dataset in later years, after they first receive an observable credit rating (Figure \ref{fig:obs-by-quarter-year}).
 
     \begin{figure}[h!]
 		\centering
@@ -130,6 +115,8 @@
 
     Construct Altman Z-score
 
+    \cite{altman_financial_1968}
+
     \begin{figure}[h!]
 		\centering
         \caption{Altman Z-Score}
@@ -154,22 +141,17 @@
 
     \subsection*{Quality Control}
 
-    quality control
-    code review of all data cleaning code
-    numerous investigations
-
-    date gaps investigations
-
-    company dropout and the company that leaves
+    Our data preparation was subject to rigorous quality control standards. We extensively code reviewed all data cleaning code. Our exploratory analyses identified data quality issues such as extreme values in financial statement variables, which we handled by winsorizing, and date gaps between quarters, earnings calls, and financial statements, which we dropped in the case of aggregiously mismatched observations. We carefully removed companies that only provided annual reporting. We also removed all observations for Peabody Energy, the only company in our dataset to declare bankruptcy (April 13, 2016) due to substantial concern about missing data leading up to the event.
 
     \section*{NLP Features}
 
-    Average call length
-
+    In general, average call length appears to be positively correlated with credit rating, with the companies with the highest ratings having the longest calls, as shown in Figure \ref{fig:call-length-by-credit-rating}.
+    
     \begin{figure}[h!]
 		\centering
         \caption{Average Call Length by Credit Rating}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_call_length_by_credit_rating_no_title.png}
+        \label{fig:call-length-by-credit-rating}
 	\end{figure}
 
     outliers and errors
@@ -186,7 +168,7 @@
         \text{Predicted Credit Rating} = f(\text{Financial Statement Variables}, \text{Sector}, \text{NLP Features})
     \end{equation*}
 
-    functions began with logistic regression
+    Our first model is a simple logistic regression
 
     XXX logistic regression predictors
 
@@ -207,6 +189,8 @@
     more classifiers
     
     first steps using AutoML
+
+    % possibly just run on SCF with everything?
 
     a good starting point for diving deep on more algorithms
 

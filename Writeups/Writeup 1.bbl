@@ -4,6 +4,16 @@
 
 \begin{thebibliography}{xx}
 
+\harvarditem[Altman]{Edward~I. Altman}{1968}{altman_financial_1968}
+{\bf Altman, Edward~I.} 1968. ``Financial {Ratios}, {Discriminant} {Analysis}
+  and the {Prediction} of {Corporate} {Bankruptcy}.'' {\em The Journal of
+  Finance}, 23(4):~589--609. \_eprint:
+  https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1540-6261.1968.tb00843.x.
+
+\harvarditem[Araci]{Dogu Araci}{2019}{araci_finbert_2019}
+{\bf Araci, Dogu.} 2019. ``{FinBERT}: {Financial} {Sentiment} {Analysis} with
+  {Pre}-trained {Language} {Models}.'' arXiv:1908.10063 [cs].
+
 \harvarditem[Das et~al.]{Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang
   \harvardand\ Leonardo Bachega}{2023}{das_credit_2023}
 {\bf Das, Sanjiv, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo
@@ -11,14 +21,31 @@
   {Learning}.'' {\em INFORMS Journal on Data Science}, 2(2):~197--217.
   Publisher: INFORMS.
 
+\harvarditem[Donovan et~al.]{John Donovan, Jared Jennings, Kevin Koharki
+  \harvardand\ Joshua Lee}{2021}{donovan_measuring_2021}
+{\bf Donovan, John, Jared Jennings, Kevin Koharki, and Joshua Lee.} 2021.
+  ``Measuring credit risk using qualitative disclosure.'' {\em Review of
+  Accounting Studies}, 26(2):~815--863.
+
 \harvarditem[Gewerc]{Alan Gewerc}{2020}{gewerc_corporate_2020}
 {\bf Gewerc, Alan.} 2020. ``Corporate {Credit} {Rating} with {Financial}
   {Ratios}.''
+
+\harvarditem[He]{Guanming He}{2018}{he_impact_2018}
+{\bf He, Guanming.} 2018. ``The {Impact} of {Impending} {Credit} {Rating}
+  {Changes} on {Management} {Earnings} {Forecasts}.'' {\em Global Journal of
+  Management and Business Research}, 18:~1--18.
 
 \harvarditem[Makwana, Bhatt \harvardand\ Delwadia]{Ravi Makwana, Dhruvil Bhatt
   \harvardand\ Kirtan Delwadia}{2022}{makwana_corporate_2022}
 {\bf Makwana, Ravi, Dhruvil Bhatt, and Kirtan Delwadia.} 2022. ``Corporate
   {Credit} {Rating}.''
+
+\harvarditem[Makwana et~al.]{Ravi Makwana, Dhruvil Bhatt, Kirtan Delwadia, Agam
+  Shah \harvardand\ Bhaskar Chaudhury}{2022}{makwana_understanding_2022}
+{\bf Makwana, Ravi, Dhruvil Bhatt, Kirtan Delwadia, Agam Shah, and Bhaskar
+  Chaudhury.} 2022. ``Understanding and {Attaining} an {Investment} {Grade}
+  {Rating} in the {Age} of {Explainable} {AI}.''
 
 \harvarditem[{S and P Global Ratings}]{{S and P Global
   Ratings}}{2024}{s_and_p_global_ratings_s_2024}
