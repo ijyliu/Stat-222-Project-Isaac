@@ -26,6 +26,8 @@
 
 \usepackage{subcaption}
 
+\usepackage{bookmark}
+
 \usepackage{babel}
 \usepackage[autostyle, english = american]{csquotes}
 \MakeOuterQuote{"}
@@ -71,7 +73,7 @@
 
     high level data description
 
-    Though much literature has focused on financial statements and reports and credit ratings (CITATIONS HERE), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q&A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Prior work has recognized the 'wisdom of the crowd' in making predictions, and our approach fully accounts for it, going beyond the proclamations of a company's management.
+    Though much literature has focused on financial statements and reports and credit ratings (CITATIONS HERE), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Prior work has recognized the 'wisdom of the crowd' in making predictions, and our approach fully accounts for it, going beyond the proclamations of a company's management.
 
     Calls also require less parsing - no looking for specific section of financial statement reports.
 
@@ -80,25 +82,22 @@
 
     \section*{Data and Exploratory Data Analysis}
 
-    We combine a wide variety of data sources to support our predictions of credit ratings. Our scope of interest publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). All data not from APIs was received as CSV or Excel files, which we converted to parquet files for efficient intermediate data storage throughout the project.
+    We combine a wide variety of data sources to support our predictions of credit ratings - combining rating data with company earnings calls, financial statement variables, and industry sector. In our final dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
 
-    Data is at the level of
-
-    In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
-
-    temporal imbalance
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). The data is temporally unbalanced, with many companies entering the dataset in later years after they first receive an observable credit rating (Figure \ref{fig:obs-by-quarter-year}).
 
     \begin{figure}[h!]
 		\centering
         \caption{Observations by Quarter and Year}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+        \label{fig:obs-by-quarter-year}
 	\end{figure}
+
+    In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
-    We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}.
-
-    Each issuance be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals.
+    We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
 
     Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were removed for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of ~0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum.
 
@@ -111,13 +110,7 @@
 
     \subsection*{Earnings Calls}
 
-    API source
-
-    Quarterly conference call transcripts that contains speaker remarks and Q and A session from 2010 - 2016.
-
-    Remove all calls that happened more than 250 days prior and after the fixed quarter date
-
-    The overall average call length stands at \avgCallLength words.
+    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modelling_prep}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the year and quarter they are supposed to discuss the results from. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
 
     \begin{figure}[h!]
 		\centering
@@ -127,11 +120,7 @@
 
     \subsection*{Financial Statements}
 
-    API source
-
-    Items from balance sheet, cash flow statement, income statement, and company market capitalization
-    
-    124 variables in total. Examples: revenue, total liabilities, net income, EBITDA
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We include 124 variables in total, such as revenue, total liabilities, net income, EBITDA. % for a list, see appendix
     
     Limit to items reported in USD
     
@@ -153,6 +142,8 @@
 
     Obtained from Kaggle with supplementary manual lookup
 
+    CSV and Excel format
+
     \begin{figure}[h!]
 		\centering
         \caption{Firms by Sector}
@@ -166,6 +157,10 @@
     quality control
     code review of all data cleaning code
     numerous investigations
+
+    date gaps investigations
+
+    company dropout and the company that leaves
 
     \section*{NLP Features}
 
@@ -234,7 +229,7 @@
     \clearpage
     \newpage
 
-    \bibliographystyle{chicago}
+    \bibliographystyle{aea}
     \bibliography{Stat-222-Capstone}
 
     % \clearpage

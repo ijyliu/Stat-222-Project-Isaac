@@ -1,21 +1,27 @@
-\begin{thebibliography}{1}
 
-\bibitem{das_credit_2023}
-Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo Bachega.
-\newblock Credit {Risk} {Modeling} with {Graph} {Machine} {Learning}.
-\newblock {\em INFORMS Journal on Data Science}, 2(2):197--217, October 2023.
-\newblock Publisher: INFORMS.
 
-\bibitem{gewerc_corporate_2020}
-Alan Gewerc.
-\newblock Corporate {Credit} {Rating} with {Financial} {Ratios}, July 2020.
+% Bibstyle aea.bst version 2009.05.20
 
-\bibitem{makwana_corporate_2022}
-Ravi Makwana, Dhruvil Bhatt, and Kirtan Delwadia.
-\newblock Corporate {Credit} {Rating}, June 2022.
+\begin{thebibliography}{xx}
 
-\bibitem{s_and_p_global_ratings_s_2024}
-{S and P Global Ratings}.
-\newblock S and {P} {Global} {Ratings}, 2024.
+\harvarditem[Das et~al.]{Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang
+  \harvardand\ Leonardo Bachega}{2023}{das_credit_2023}
+{\bf Das, Sanjiv, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo
+  Bachega.} 2023. ``Credit {Risk} {Modeling} with {Graph} {Machine}
+  {Learning}.'' {\em INFORMS Journal on Data Science}, 2(2):~197--217.
+  Publisher: INFORMS.
+
+\harvarditem[Gewerc]{Alan Gewerc}{2020}{gewerc_corporate_2020}
+{\bf Gewerc, Alan.} 2020. ``Corporate {Credit} {Rating} with {Financial}
+  {Ratios}.''
+
+\harvarditem[Makwana, Bhatt \harvardand\ Delwadia]{Ravi Makwana, Dhruvil Bhatt
+  \harvardand\ Kirtan Delwadia}{2022}{makwana_corporate_2022}
+{\bf Makwana, Ravi, Dhruvil Bhatt, and Kirtan Delwadia.} 2022. ``Corporate
+  {Credit} {Rating}.''
+
+\harvarditem[{S and P Global Ratings}]{{S and P Global
+  Ratings}}{2024}{s_and_p_global_ratings_s_2024}
+{\bf {S and P Global Ratings}.} 2024. ``S and {P} {Global} {Ratings}.''
 
 \end{thebibliography}
