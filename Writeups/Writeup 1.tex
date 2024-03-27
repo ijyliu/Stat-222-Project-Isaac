@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{article}[11pt]
 
 \usepackage{natbib}
 \usepackage[sc]{mathpazo}
@@ -95,7 +95,7 @@
 
     \subsection*{Earnings Calls}
 
-    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modelling_prep}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the year and quarter they are supposed to discuss the results from. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
+    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modeling_prep_financial_2024}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the year and quarter they are supposed to discuss the results from. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
 
     \begin{figure}[h!]
 		\centering
@@ -107,45 +107,51 @@
 
     Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We include 124 variables in total, such as revenue, total liabilities, net income, EBITDA. % for a list, see appendix
     
-    Limit to items reported in USD
-    
-    Winsorizing: Check for items mis-multiplied by 1,000 in parsing - if last digits are “000.00” and item is above or below 2.5\% and 97.5\% quantile, divide by 1,000
+    To prepare the data, we limit our observations to items reported in USD, check for and correct items off by a factor of 1,000 as a result of parsing (if last few digits are 000.00 and the item is above or below 2.5\% and 97.5\% quantile, divide by 1,000), and check some accounting identities in \cite{das_credit_2023}, setting failing variables to missing.
 
-    Tests to ensure the value in income statement and balance sheet are consistent with each other.
+    In some of our models, we make use of Altman's Z-score, a traditional measure of bankruptcy risk \citep{altman_financial_1968}. As in \cite{das_credit_2023}, the components of the Z-score are as follows:
 
-    Construct Altman Z-score
+    \begin{itemize}
+        \item A: EBIT / Total Assets
+        \item B: Net Sales / Total Assets
+        \item C: Market Capitalization / Total Liabilities
+        \item D: Working Capital / Total Assets
+        \item E: Retained Earnings / Total Assets
+    \end{itemize}
 
-    \cite{altman_financial_1968}
+    These are combined via the following equation:
+
+    \begin{equation*}
+        \text{Z-Score} = 3.3 A + 0.99 B + 0.6 C + 1.2 D + 1.4 E
+    \end{equation*}
+
+    We Winsorize extreme values of Ratio A, B, D, and E by setting the top and bottom 2.5\% of values to the 97.5 and 2.5 percentile, respectively. Due to the presence of additional outliers and the sourcing of market capitalization from a different dataset than the rest of the variables, Ratio C is instead Winsorized over the top and bottom 5\% of values. Figure \ref{fig:altman-z-score} shows the distribution of adjusted Z-scores in our dataset. Though interpretations of the score vary, traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to have a high chance of bankruptcy. Though such an interpretation is potentially overly pessimistic for our data, we do have some companies on both ends of the spectrum.
 
     \begin{figure}[h!]
 		\centering
         \caption{Altman Z-Score}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
+        \label{fig:altman-z-score}
 	\end{figure}    
 
     \subsection*{Sector}
 
-    GCIS developed by S and P
-
-    Obtained from Kaggle with supplementary manual lookup
-
-    CSV and Excel format
+    The GCIS industry classification standard divides companies into 11 major industry sectors (there are finer groupings as well, but this data was not easily obtainable for our project) \citep{s_and_p_gics_2024}. It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format and supplemented them with manual lookup \citep{kozlov_us_2022}. Figure \ref{fig:firms-by-sector} shows the unfortunate sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors, relative to very few in the distinctly different financials and real estate sectors.
 
     \begin{figure}[h!]
 		\centering
         \caption{Firms by Sector}
         \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+        \label{fig:firms-by-sector}
 	\end{figure}
-
-    sectoral imbalance    
 
     \subsection*{Quality Control}
 
-    Our data preparation was subject to rigorous quality control standards. We extensively code reviewed all data cleaning code. Our exploratory analyses identified data quality issues such as extreme values in financial statement variables, which we handled by winsorizing, and date gaps between quarters, earnings calls, and financial statements, which we dropped in the case of aggregiously mismatched observations. We carefully removed companies that only provided annual reporting. We also removed all observations for Peabody Energy, the only company in our dataset to declare bankruptcy (April 13, 2016) due to substantial concern about missing data leading up to the event.
+    Our data preparation was subject to rigorous quality control standards. We extensively code reviewed all data cleaning code. Our exploratory analyses identified data quality issues such as extreme values in financial statement variables, which we handled by winsorizing, and date gaps between quarters, earnings calls, and financial statements, which we dropped in the case of aggregiously mismatched observations. We carefully removed companies that only provided annual reporting. We also removed all observations for Peabody Energy (ticker BTU), the only company in our dataset to declare bankruptcy (April 13, 2016) due to substantial concern about missing data leading up to the event.
 
     \section*{NLP Features}
 
-    In general, average call length appears to be positively correlated with credit rating, with the companies with the highest ratings having the longest calls, as shown in Figure \ref{fig:call-length-by-credit-rating}.
+    In general, average call length in words appears to be positively correlated with credit rating, with the companies with the highest ratings having the longest calls, as shown in Figure \ref{fig:call-length-by-credit-rating}.
     
     \begin{figure}[h!]
 		\centering
