@@ -198,7 +198,14 @@
 
     \section*{Next Steps}
 
-    We've begun using the AutoML library Autogluon to explore a wider variety of classifiers. The results can provide a good starting point for our further modelling choices
+    We've begun using the AutoML library Autogluon to explore a wider variety of classifiers. Autogluon runs a wide variety of state-of-the-art prediction algorithms and performs hyperparameter tuning. The results, shown in Table \ref{tab:autogluon-leaderboard} can provide a good starting point for our further modelling choices.
+
+    \begin{table*}
+        \centering
+        \caption{Autogluon Leaderboard}
+        \input{../Output/Modelling/Autogluon/ag-20240331_233723_leaderboard.tex}
+        \label{tab:autogluon-leaderboard}
+    \end{table*}
 
     Ensembling and Auto-ML
 
