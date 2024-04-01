@@ -78,7 +78,7 @@
         \label{fig:obs-by-quarter-year}
 	\end{figure}
 
-    In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+    To ensure comparability, we drop items missing any predictor variable. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
@@ -106,6 +106,12 @@
     \subsection*{Financial Statements}
 
     Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We include 124 variables in total, such as revenue, total liabilities, net income, EBITDA. % for a list, see appendix
+
+    Drop cases where dates do not agree between not agree between tabular financial sources
+
+    Drop cases where filing date falls outside of fixed quarter
+
+    Drop cases hwere filing date more than 45 days after earnings call
     
     To prepare the data, we limit our observations to items reported in USD, check for and correct items off by a factor of 1,000 as a result of parsing (if last few digits are 000.00 and the item is above or below 2.5\% and 97.5\% quantile, divide by 1,000), and check some accounting identities in \cite{das_credit_2023}, setting failing variables to missing.
 
@@ -160,6 +166,8 @@
         \label{fig:call-length-by-credit-rating}
 	\end{figure}
 
+    \section*{Things to Include}
+
     outliers and errors
 
     correlations and patterns
@@ -189,6 +197,8 @@
     interpretation
 
     \section*{Next Steps}
+
+    We've begun using the AutoML library Autogluon to explore a wider variety of classifiers. The results can provide a good starting point for our further modelling choices
 
     Ensembling and Auto-ML
 
