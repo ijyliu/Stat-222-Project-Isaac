@@ -198,7 +198,7 @@
 
     \section*{Next Steps}
 
-    We've begun using the AutoML library Autogluon to explore a wider variety of classifiers. Autogluon runs a wide variety of state-of-the-art prediction algorithms and performs hyperparameter tuning. The results, shown in Table \ref{tab:autogluon-leaderboard} can provide a good starting point for our further modelling choices.
+    We've begun using the AutoML library Autogluon to explore a wider variety of classifiers. Autogluon runs a wide variety of state-of-the-art prediction algorithms and performs hyperparameter tuning. The results, shown in Table \ref{tab:autogluon-leaderboard} for all allowed predictors in our dataset (metadata about call and statement dates, the rating on the previous fixed quarter date, all the financial statement variables, all the constructed NLP features, and sector) can provide a good starting point for our further modelling choices.
 
     \begin{table*}
         \centering
@@ -207,11 +207,16 @@
         \label{tab:autogluon-leaderboard}
     \end{table*}
 
-    Ensembling and Auto-ML
+    Tree-based bagging and boosting methods (boosting in particular) seem to perform extraordinarily well on our modelling task (ExtraTrees is a somewhat simplified variant of random forest; GBM stands for Gradient Boosting Machine). Each of the trained models also comes with a set of optimized hyperparameters - after selecting a model, we will further tune these hyperparameters to improve performance. The library also provides feature importance measures, computed by permuting each feature and measuring the drop in accuracy.
 
-    more classifiers
-    
-    first steps using AutoML
+    \begin{table*}
+        \centering
+        \caption{Feature Importance}
+        \input{../Output/Modelling/Autogluon/ag-20240331_233723_feature_importance.tex}
+        \label{tab:autogluon-feature-importance}
+    \end{table*}
+
+    In Table, \ref{tab:autogluon-feature-importance}
 
     % possibly just run on SCF with everything?
 
