@@ -74,7 +74,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Observations by Quarter and Year}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
         \label{fig:obs-by-quarter-year}
 	\end{figure}
 
@@ -89,7 +89,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Credit Ratings}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
         \label{fig:credit-ratings}
 	\end{figure}
 
@@ -102,7 +102,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Number of Words in Earnings Calls}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_num_words_distribution_no_title.png}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_num_words_distribution_no_title.png}
 	\end{figure}
 
     \subsection*{Financial Statements}
@@ -110,15 +110,6 @@
     Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We include 124 variables in total, such as revenue, total liabilities, net income, EBITDA.
     
     To prepare the data, we limit our observations to items reported in USD, check for and correct items off by a factor of 1,000 as a result of parsing (if last few digits are 000.00 and the item is above or below 2.5\% and 97.5\% quantile, divide by 1,000), and check some accounting identities in \cite{das_credit_2023}, setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
-
-    In some of our models, we make use of Altman's Z-score, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities \citep{altman_financial_1968} (for details on the construction of the score, see Appendix section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of adjusted Z-scores in our dataset. Though interpretations of the score vary, traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to have a high chance of bankruptcy. Though such an interpretation is potentially overly pessimistic for our data, we do have some companies on both ends of the spectrum.
-
-    % \begin{figure}[h!]
-	% 	\centering
-    %     \caption{Altman Z-Score}
-    %     \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
-    %     \label{fig:altman-z-score}
-	% \end{figure}    
 
     \begin{figure*}
         \caption{Altman Z-Score}
@@ -136,18 +127,12 @@
         \hfill
         \label{fig:altman-z-score}
     \end{figure*}
-      
 
+    In some of our models, we make use of Altman's Z-score, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities \citep{altman_financial_1968} (for details on the construction of the score, see Appendix section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of adjusted Z-scores in our dataset. Traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to have a high chance of bankruptcy. The average scores for each rating in our data seem to align well with this interpretation, with high scores being associated with higher ratings in a linear manner. Aside from a few quirks on the lower end of the rating spectrum (where not many companies and ratings are available), Z-Score is likely to be highly useful as a predictor.
+      
     \subsection*{Sector}
 
     The GCIS industry classification standard divides companies into 11 major industry sectors (there are finer groupings as well, but this data was not easily obtainable for our project) \citep{s_and_p_gics_2024}. It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format and supplemented them with manual lookup \citep{kozlov_us_2022}. Figure \ref{fig:firms-by-sector} shows the unfortunate sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors, relative to very few in the distinctly different financials and real estate sectors.
-
-    % \begin{figure}[h!]
-	% 	\centering
-    %     \caption{Firms by Sector}
-    %     \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
-    %     \label{fig:firms-by-sector}
-	% \end{figure}
 
     \begin{figure*}
         \caption{Sector}
@@ -177,7 +162,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Average Call Length by Credit Rating}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_call_length_by_credit_rating_no_title.png}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_call_length_by_credit_rating_no_title.png}
         \label{fig:call-length-by-credit-rating}
 	\end{figure}
 
@@ -188,8 +173,12 @@
     Our overall model architecture is of the form
 
     \begin{equation*}
-        \text{Predicted Credit Rating} = f(\text{Financial Statement Variables}, \text{Sector}, \text{NLP Features})
+        \text{Predicted Credit Rating} = f(\text{Previous Rating}, \text{Metadata}, \text{Financial Variables}, \text{Sector}, \text{NLP Features})
     \end{equation*}
+
+    where Metadata includes relevant date variables from the data sources and the identity of the company and the other variables are as described above.
+
+    \subsection*{Logistic Regression}
 
     Our first model is a simple logistic regression
 
@@ -224,18 +213,16 @@
 
     Tree-based bagging and boosting methods (boosting in particular) seem to perform extraordinarily well on our modelling task (ExtraTrees is a somewhat simplified variant of random forest; GBM stands for Gradient Boosting Machine). Each of the trained models also comes with a set of optimized hyperparameters - after selecting a model, we will further tune these hyperparameters to improve performance. The library also provides feature importance measures, computed by permuting each feature and measuring the drop in accuracy. Though these tests are not of high quality (and many results are not reported or are not significant), they confirm that previous ratings, earnings call word counts and tone variables, a few financial variables, and several date metadate variables are all very important.
 
-    Another area of interest for us is continuing to pursue the approach in \cite{das_credit_2023}, which uses graph neural networks to model the relationships between companies in combination with tabular financial data and NLP features. Prerequisite to this approach is the construction of an undirected graph showing linkages between companies based on the earnings call data. 
-    
-    We've pursued begun work on this step from two angles. First, following the original paper, Doc2Vec embeddings representing calls can be averaged for each company. A graph can then be constructed with connecting edges added for cases when the vectors for each company have cosine similarity above a certain threshhold.
-
-    As a second approach, which also opens more opportunities for exploration even without a neural network, we have used transformer-based Named Entity Recognition to identify mentions of any company in each earnings call. On average, each earnings call has \avgCompanyMentions \space company mentions - Figure \ref{fig:company-mentions} shows the distribution. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
+    Another area of interest for us is continuing to pursue the approach in \cite{das_credit_2023}, which uses graph neural networks to model the relationships between companies in combination with tabular financial data and NLP features. Prerequisite to this approach is the construction of an undirected graph showing linkages between companies based on the earnings call data. We've pursued begun work on this step from two angles. First, following the original paper, Doc2Vec embeddings representing calls can be averaged for each company. A graph can then be constructed with connecting edges added for cases when the vectors for each company have cosine similarity above a certain threshhold. As a second approach, which also opens more opportunities for exploration even without a neural network, we have used transformer-based Named Entity Recognition to identify mentions of any company in each earnings call. On average, each earnings call has \avgCompanyMentions \space company mentions - Figure \ref{fig:company-mentions} shows the distribution.
 
     \begin{figure}[h!]
 		\centering
         \caption{Company Mentions}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
         \label{fig:company-mentions}
 	\end{figure}
+
+    Though the vast majority of these mentions are likely to be of the company whose call is being discussed, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors within some calls. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
     
     \clearpage
     \newpage
