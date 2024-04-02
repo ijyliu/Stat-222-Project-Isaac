@@ -109,23 +109,58 @@
 
     In some of our models, we make use of Altman's Z-score, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities \citep{altman_financial_1968} (for details on the construction of the score, see Appendix section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of adjusted Z-scores in our dataset. Though interpretations of the score vary, traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to have a high chance of bankruptcy. Though such an interpretation is potentially overly pessimistic for our data, we do have some companies on both ends of the spectrum.
 
-    \begin{figure}[h!]
-		\centering
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{Altman Z-Score}
+    %     \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
+    %     \label{fig:altman-z-score}
+	% \end{figure}    
+
+    \begin{figure*}
         \caption{Altman Z-Score}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Distribution}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Average by Rating}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/mean_altman_Z_by_credit_rating_no_title.png}
+        \end{subfigure}
+        \hfill
         \label{fig:altman-z-score}
-	\end{figure}    
+    \end{figure*}
+      
 
     \subsection*{Sector}
 
     The GCIS industry classification standard divides companies into 11 major industry sectors (there are finer groupings as well, but this data was not easily obtainable for our project) \citep{s_and_p_gics_2024}. It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format and supplemented them with manual lookup \citep{kozlov_us_2022}. Figure \ref{fig:firms-by-sector} shows the unfortunate sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors, relative to very few in the distinctly different financials and real estate sectors.
 
-    \begin{figure}[h!]
-		\centering
-        \caption{Firms by Sector}
-        \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{Firms by Sector}
+    %     \includegraphics[width=0.5\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+    %     \label{fig:firms-by-sector}
+	% \end{figure}
+
+    \begin{figure*}
+        \caption{Sector}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Firms by Sector}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Average Rating by Sector}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_average_credit_rating_by_sector_no_title.png}
+        \end{subfigure}
+        \hfill
         \label{fig:firms-by-sector}
-	\end{figure}
+    \end{figure*}
 
     \subsection*{Quality Control}
 
@@ -210,6 +245,18 @@
     \appendix
 
     \section{Appendix}
+
+    \subsection{Summary Statistics for Numeric Variables}
+
+    Table \ref{tab:sum_stats} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
+
+    \begin{table}[h]
+        \caption{Summary Statistics for Numeric Variables}
+        \tiny
+        \centering
+        \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
+        \label{tab:sum_stats}
+    \end{table}
 
     \subsection{Altman's Z-Score}
 
