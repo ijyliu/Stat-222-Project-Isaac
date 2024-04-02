@@ -14,6 +14,11 @@
 {\bf Araci, Dogu.} 2019. ``{FinBERT}: {Financial} {Sentiment} {Analysis} with
   {Pre}-trained {Language} {Models}.'' arXiv:1908.10063 [cs].
 
+\harvarditem[Beltagy, Peters \harvardand\ Cohan]{Iz Beltagy, Matthew~E. Peters
+  \harvardand\ Arman Cohan}{2020}{beltagy_longformer_2020}
+{\bf Beltagy, Iz, Matthew~E. Peters, and Arman Cohan.} 2020. ``Longformer:
+  {The} {Long}-{Document} {Transformer}.'' arXiv:2004.05150 [cs].
+
 \harvarditem[Das et~al.]{Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang
   \harvardand\ Leonardo Bachega}{2023}{das_credit_2023}
 {\bf Das, Sanjiv, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo
@@ -43,6 +48,11 @@
 
 \harvarditem[Kozlov]{Alex Kozlov}{2022}{kozlov_us_2022}
 {\bf Kozlov, Alex.} 2022. ``{US} public companies classification.''
+
+\harvarditem[Le \harvardand\ Mikolov]{Quoc~V. Le \harvardand\ Tomas
+  Mikolov}{2014}{le_distributed_2014}
+{\bf Le, Quoc~V., and Tomas Mikolov.} 2014. ``Distributed {Representations} of
+  {Sentences} and {Documents}.'' arXiv:1405.4053 [cs].
 
 \harvarditem[Makwana, Bhatt \harvardand\ Delwadia]{Ravi Makwana, Dhruvil Bhatt
   \harvardand\ Kirtan Delwadia}{2022}{makwana_corporate_2022}
