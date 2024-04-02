@@ -86,14 +86,24 @@
 
     Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were removed for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of ~0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum.
 
-    \begin{figure}[h!]
-		\centering
+    \begin{figure*}
         \caption{Credit Ratings}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Distribution}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Change Between Fixed Quarter Dates}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/Change_Short_no_title.png}
+        \end{subfigure}
+        \hfill
         \label{fig:credit-ratings}
-	\end{figure}
+    \end{figure*}
 
-    Ratings tend to be constant over time. Relative to the previous quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
+    Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
 
     \subsection*{Earnings Calls}
 
@@ -211,7 +221,9 @@
         \label{tab:autogluon-leaderboard}
     \end{table*}
 
-    Tree-based bagging and boosting methods (boosting in particular) seem to perform extraordinarily well on our modelling task (ExtraTrees is a somewhat simplified variant of random forest; GBM stands for Gradient Boosting Machine). Each of the trained models also comes with a set of optimized hyperparameters - after selecting a model, we will further tune these hyperparameters to improve performance. The library also provides feature importance measures, computed by permuting each feature and measuring the drop in accuracy. Though these tests are not of high quality (and many results are not reported or are not significant), they confirm that previous ratings, earnings call word counts and tone variables, a few financial variables, and several date metadate variables are all very important.
+    Tree-based bagging and boosting methods (boosting in particular) seem to perform extraordinarily well on our modelling task (ExtraTrees is a somewhat simplified variant of random forest; GBM stands for Gradient Boosting Machine). Each of the trained Autogluon models also comes with a set of optimized hyperparameters - after selecting a model, we will further tune these hyperparameters to improve performance. The library also provides feature importance measures, computed by permuting each feature and measuring the drop in accuracy. Though these tests are not of high quality (and many results are not reported or are not significant), they confirm that previous ratings, earnings call word counts and tone variables, a few financial variables, and several date metadate variables are all very important.
+
+    CATEGORICAL PREVIOUS RATING IS THE MOST IMPORTANT PREDICTOR
 
     Another area of interest for us is continuing to pursue the approach in \cite{das_credit_2023}, which uses graph neural networks to model the relationships between companies in combination with tabular financial data and NLP features. Prerequisite to this approach is the construction of an undirected graph showing linkages between companies based on the earnings call data. We've pursued begun work on this step from two angles. First, following the original paper, Doc2Vec embeddings representing calls can be averaged for each company. A graph can then be constructed with connecting edges added for cases when the vectors for each company have cosine similarity above a certain threshhold. As a second approach, which also opens more opportunities for exploration even without a neural network, we have used transformer-based Named Entity Recognition to identify mentions of any company in each earnings call. On average, each earnings call has \avgCompanyMentions \space company mentions - Figure \ref{fig:company-mentions} shows the distribution.
 
@@ -241,13 +253,7 @@
 
     Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
 
-    % \begin{table}[h]
-    %     \caption{Summary Statistics for Numeric Variables}
-    %     \tiny
-    %     \centering
     \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
-    %     \label{tab:sum_stats}
-    % \end{table}
 
     \subsection{Altman's Z-Score}
 
