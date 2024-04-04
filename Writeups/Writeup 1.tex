@@ -12,6 +12,7 @@
 \usepackage[margin=.75in, tmargin=0.71in, bmargin=0.71in]{geometry}
 \usepackage{url}
 
+\usepackage{chngcntr}
 \usepackage{appendix}
 \usepackage{hyperref}
 \usepackage{xcolor}
@@ -33,7 +34,7 @@
 \MakeOuterQuote{"}
 
 \title{Textual Analysis and Financial Statements}
-\author{Isaac Liu}
+\author{Isaac Liu with Owen Lin, Chengzheng Xing, and Sean Zhou}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}
@@ -59,32 +60,27 @@
 
     \section*{Introduction}
 
-    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors (there is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}), and by any parties seeking interpolated ratings for companies that do not have them.
+    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors,\footnote{There is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}.} and by any parties seeking interpolated ratings for companies that do not have them.
 
-    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences.\footnote{Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information.} Textual features such as pre-trained language model vector embeddings \citep{araci_finbert_2019} and analyses of sentiment accompany tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. If time allows, we will also incorporate advances in the study of graph neural networks to create additional embeddings modelling linkages between firms \citep{das_credit_2023} implied by calls.
+    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences.\footnote{Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information.} Textual features such as pre-trained language model vector embeddings \citep{araci_finbert_2019} and analyses of sentiment join tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. If time allows, we will also make use of advances in the study of graph neural networks to incorporate additional embeddings modelling linkages between firms \citep{das_credit_2023} implied by calls.
 
-    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades using unigram and bigram frequencies and the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more techniques from machine learning such as the power of pre-trained language models and a wider variety of algorithms for classification.
+    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades. Unigram and bigram word frequencies were used with the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more recent techniques such as pre-trained neural language models and a wider variety of algorithms for classification.
 
     \section*{Data and Exploratory Data Analysis}
 
-    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our final dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
+    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
 
-    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data). The data is temporally unbalanced, with many companies entering the dataset in later years, after they first receive an observable credit rating (Figure \ref{fig:obs-by-quarter-year}).
+    A FULL LIST OF VARIABLES
 
-    \begin{figure}[h!]
-		\centering
-        \caption{Observations by Quarter and Year}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
-        \label{fig:obs-by-quarter-year}
-	\end{figure}
+    INCLUDING SUM STATS FOR NUMERIC VARIABLES
 
-    To ensure comparability, we drop items missing any predictor variable. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. To ensure comparability, we drop items missing any predictor variable. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
     We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
 
-    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were removed for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of ~0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum.
+    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were removed for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of ~0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
 
     \begin{figure*}
         \caption{Credit Ratings}
@@ -103,23 +99,13 @@
         \label{fig:credit-ratings}
     \end{figure*}
 
-    Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
-
     \subsection*{Earnings Calls}
 
     Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modeling_prep_financial_2024}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the year and quarter they are supposed to discuss the results from. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
 
-    \begin{figure}[h!]
-		\centering
-        \caption{Number of Words in Earnings Calls}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_num_words_distribution_no_title.png}
-	\end{figure}
-
     \subsection*{Financial Statements}
 
-    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We include 124 variables in total, such as revenue, total liabilities, net income, EBITDA.
-    
-    To prepare the data, we limit our observations to items reported in USD, check for and correct items off by a factor of 1,000 as a result of parsing (if last few digits are 000.00 and the item is above or below 2.5\% and 97.5\% quantile, divide by 1,000), and check some accounting identities in \cite{das_credit_2023}, setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. To prepare the data, we limit our observations to items reported in USD, check for and correct items off by a factor of 1,000 as a result of parsing (if last few digits are 000.00 and the item is above or below 2.5\% and 97.5\% quantile, divide by 1,000), and check some accounting identities in \cite{das_credit_2023}, setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
 
     \begin{figure*}
         \caption{Altman Z-Score}
@@ -163,20 +149,34 @@
 
     \subsection*{Quality Control}
 
-    Our data preparation was subject to rigorous quality control standards. We extensively code reviewed all data cleaning code. Our exploratory analyses identified data quality issues such as extreme values in financial statement variables, which we handled by winsorizing, and date gaps between quarters, earnings calls, and financial statements, which we dropped in the case of aggregiously mismatched observations. %We carefully removed companies that only provided annual reporting. We also removed all observations for Peabody Energy (ticker BTU), the only company in our dataset to declare bankruptcy (April 13, 2016) due to substantial concern about missing data leading up to the event.
+    Our data preparation was subject to rigorous quality control standards. We extensively code reviewed all data cleaning code. Our exploratory analyses identified data quality issues such as extreme values in financial statement variables, which we handled by winsorizing, and date gaps between quarters, earnings calls, and financial statements, which we dropped in the case of aggregiously mismatched observations.
 
     \section*{NLP Features}
 
-    In general, average call length in words appears to be positively correlated with credit rating, with the companies with the highest ratings having the longest calls, as shown in Figure \ref{fig:call-length-by-credit-rating}.
-    
-    \begin{figure}[h!]
-		\centering
-        \caption{Average Call Length by Credit Rating}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA/all_data_call_length_by_credit_rating_no_title.png}
-        \label{fig:call-length-by-credit-rating}
-	\end{figure}
+    Our NLP features capture the sentiment of calls, the transparency of discussion, and the level of analyst engagement.
 
-    We have prepared both FinBERT\footnote{BERT is a pretrained transformer-based language model that encodes text into embedding vectors using surrounding context. FinBERT is a version of BERT finetuned for tasks in the financial domain (language model embedding performance can vary greatly by domain).} \citep{araci_finbert_2019} and Doc2Vec\footnote{This method involves constructing representations of each call based on the bag-of-words and skipgram tasks - a neural network is trained to either a word or a word's context while accounting for a vector identifying the document.} \citep{le_distributed_2014} embeddings to represent each call, and are considering using these as inputs to our classifier.
+    \begin{itemize}
+        \item Net Positivity Score - In line with \cite{kantos_comparative_2022}, we use the Harvard IV-4 Psychosocial Dictionary \cite{noauthor_inquirer_nodate} to count positive and negative words and compute
+        \begin{equation*}
+            \text{Net Positivity Score} = log_{10}\frac{\text{Count Positive} + 1}{\text{Count Negative} + 1}
+        \end{equation*}
+        \item Tone - Following \cite{price_earnings_2012}, we use the Harvard dictionary to count words falling in various categories. Then we construct tone using the first principal component of the matrix with each call as a row and each column as one of the following:
+        \begin{equation*}
+            \frac{\text{Positive}}{\text{Negative}}, \frac{\text{Active}}{\text{Passive}}, \frac{\text{Strong}}{\text{Weak}}, \frac{\text{Overstated}}{\text{Understated}}
+        \end{equation*}
+        \item Numeric Transparency - ratio of numbers to words in the word-tokenized call
+        \item Readability - We construct the Gunning-Fog readability score \citep{gunning_technique_1952} as 
+        \begin{equation*}
+            0.4 \times (\frac{\text{Words}}{\text{Sentences}} + 100 \times \frac{\text{3+ Syllable Words}}{\text{Words}})
+        \end{equation*}
+        \item Number of Questions - count of question marks
+    \end{itemize}
+
+    We also add the word count of each call, as this appears to be highly predictive. The distribution of each NLP feature by rating is shown in Figure XXX below.
+
+    INSERT FIGURE
+
+    We are working on preparing FinBERT\footnote{BERT is a pretrained transformer-based language model that encodes text into embedding vectors using surrounding context. FinBERT is a version of BERT finetuned for tasks in the financial domain (language model embedding performance can vary greatly by domain).} \citep{araci_finbert_2019} embeddings and have created Doc2Vec\footnote{This method involves constructing representations of each call based on the bag-of-words and skipgram tasks - a neural network is trained to either a word or a word's context while accounting for a vector identifying the document.} \citep{le_distributed_2014} embeddings to represent sentences and calls. These may be used to improve estimations of sentiment or a direct input to our classifier.
 
     \section*{Modelling}
 
@@ -210,7 +210,7 @@
 
     We have seen above that textual and NLP features are contributing to our predictions...
 
-    One major next step is continuing to improve the construction of our NLP features and methods. Much more work could be done to improve the construction of our sentiment scores and analysis - seeking out better pretrained models for earnings call sentiment, or improving the methods through which embedding representations are converted to sentiment. Some members of the group have also been working on a separate class project involving annotating earnings calls with topics discussed. This work could be integrated into our project to provide additional features for our models - we could identity topics and then connect them to credit ratings. Finally, we could try building an end-to-end transformer classifier that takes in earnings calls and outputs credit ratings (perhaps finetuning and adding a classifier on top of the longformer \citep{beltagy_longformer_2020} transformer encoder model (suitable for document, rather than word or sentence embedding creation)).
+    One major next step is continuing to improve the construction of our NLP features and methods. Much more work could be done to improve the construction of our sentiment scores and analysis - seeking out better pretrained models for earnings call sentiment, or improving the methods through which embedding representations are converted to sentiment. Some members of the group have also been working on a separate class project involving annotating earnings calls with topics discussed. This work could be integrated into our project to provide additional features for our models - we could identity topics and then connect them to credit ratings. Finally, we could try building an end-to-end transformer classifier that takes in earnings calls and outputs credit ratings (perhaps finetuning and adding a classifier on top of the longformer \citep{beltagy_longformer_2020} transformer encoder model\footnote{Longformer or other techniques are ideal for document, rather than word or sentence embedding creation}).
 
     We've also begun using the AutoML library Autogluon to explore a wider variety of classifiers. Autogluon runs a wide variety of state-of-the-art prediction algorithms and performs hyperparameter tuning. The results, shown in Table \ref{tab:autogluon-leaderboard} for all allowed predictors in our dataset (metadata about call and statement dates, the rating on the previous fixed quarter date, all the financial statement variables, all the constructed NLP features, and sector) can provide a good starting point for our further modelling choices.
 
@@ -236,6 +236,10 @@
 
     Though the vast majority of these mentions are likely to be of the company whose call is being discussed, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors within some calls. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
     
+    \section*{Acknowledgements}
+
+    Special thanks to the UC Berkeley Stats Department Statistical Computing Facility (SCF). Other acknowledgements: Libor Pospisil, Robert Thompson. GitHub Co-Pilot was used for python code generation (mostly for plotting and table creation/parsing).
+
     \clearpage
     \newpage
 
@@ -247,6 +251,10 @@
 
     \appendix
 
+    % Reset and change numbering for figures and tables
+    \counterwithin{figure}{section}
+    \counterwithin{table}{section}
+
     \section{Appendix}
 
     \subsection{Summary Statistics for Numeric Variables}
@@ -254,6 +262,17 @@
     Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
 
     \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
+
+    \subsection{Observations by Quarter and Year}
+
+    Figure \ref{fig:obs-by-quarter-year} demonstrates that the data is temporally unbalanced, with many companies entering the dataset in later years, after they first receive an observable credit rating.
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Observations by Quarter and Year}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+        \label{fig:obs-by-quarter-year}
+	\end{figure}
 
     \subsection{Altman's Z-Score}
 

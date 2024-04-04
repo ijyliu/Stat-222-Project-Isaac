@@ -41,10 +41,22 @@
 {\bf Gewerc, Alan.} 2020. ``Corporate {Credit} {Rating} with {Financial}
   {Ratios}.''
 
+\harvarditem[Gunning]{Robert Gunning}{1952}{gunning_technique_1952}
+{\bf Gunning, Robert.} 1952. {\em The {Technique} of {Clear} {Writing}.}
+  McGraw-Hill. Google-Books-ID: ofI0AAAAMAAJ.
+
 \harvarditem[He]{Guanming He}{2018}{he_impact_2018}
 {\bf He, Guanming.} 2018. ``The {Impact} of {Impending} {Credit} {Rating}
   {Changes} on {Management} {Earnings} {Forecasts}.'' {\em Global Journal of
   Management and Business Research}, 18:~1--18.
+
+\harvarditem[]{}{n.d.}{noauthor_inquirer_nodate}
+{\bf Inquirer {Home} {Page}.} n.d..
+
+\harvarditem[Kantos et~al.]{Christopher Kantos, Dan Joldzic, Gautam Mitra
+  \harvardand\ Kieu Thi~Hoang}{2022}{kantos_comparative_2022}
+{\bf Kantos, Christopher, Dan Joldzic, Gautam Mitra, and Kieu Thi~Hoang.} 2022.
+  ``Comparative {Analysis} of {NLP} {Approaches} for {Earnings} {Calls}.''
 
 \harvarditem[Kozlov]{Alex Kozlov}{2022}{kozlov_us_2022}
 {\bf Kozlov, Alex.} 2022. ``{US} public companies classification.''
@@ -64,6 +76,13 @@
 {\bf Makwana, Ravi, Dhruvil Bhatt, Kirtan Delwadia, Agam Shah, and Bhaskar
   Chaudhury.} 2022. ``Understanding and {Attaining} an {Investment} {Grade}
   {Rating} in the {Age} of {Explainable} {AI}.''
+
+\harvarditem[Price et~al.]{S.~McKay Price, James~S. Doran, David~R. Peterson
+  \harvardand\ Barbara~A. Bliss}{2012}{price_earnings_2012}
+{\bf Price, S.~McKay, James~S. Doran, David~R. Peterson, and Barbara~A. Bliss.}
+  2012. ``Earnings conference calls and stock returns: {The} incremental
+  informativeness of textual tone.'' {\em Journal of Banking \& Finance},
+  36(4):~992--1011.
 
 \harvarditem[{S and P} \harvardand\ {MSCI}]{{S and P} \harvardand\
   {MSCI}}{2024}{s_and_p_gics_2024}
