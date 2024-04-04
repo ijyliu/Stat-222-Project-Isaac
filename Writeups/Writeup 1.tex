@@ -206,6 +206,21 @@
     
     interpretation
 
+    \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Confusion Matrix - Most Complex Model}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
+        \label{fig:most-complex-confusion-matrix}
+	\end{figure}
+
+    \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Classification_Report.tex}
+
+    \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+
+    \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
+
     \section*{Conclusion and Next Steps}
 
     We have seen above that textual and NLP features are contributing to our predictions...
@@ -217,7 +232,7 @@
     \begin{table*}
         \centering
         \caption{Autogluon Leaderboard}
-        \input{../Output/Modelling/Autogluon/ag-20240331_233723_leaderboard.tex}
+        \input{../Output/Modelling/Autogluon/Autogluon_Tabular_Only_SCF_Medium_Presets_leaderboard.tex}
         \label{tab:autogluon-leaderboard}
     \end{table*}
 
