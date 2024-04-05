@@ -206,20 +206,33 @@
     
     interpretation
 
-    \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
+    \begin{table*}
+        \centering
+        \caption{Model Comparison}
+        \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
+        \label{tab:model-comparison}
+    \end{table*}
 
-    \begin{figure}[h!]
-		\centering
-        \caption{Confusion Matrix - Most Complex Model}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
-        \label{fig:most-complex-confusion-matrix}
-	\end{figure}
+    \begin{table*}
+        \centering
+        \caption{Classification Report - Most Complex Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Classification_Report.tex}
+        \label{tab:most-complex-classification-report}
+    \end{table*}
 
-    \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Classification_Report.tex}
+    \begin{table*}
+        \centering
+        \caption{Best Parameters - Most Complex Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+        \label{tab:most-complex-best-params}
+    \end{table*}
 
-    \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
-
-    \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
+    \begin{table*}
+        \centering
+        \caption{Classification Report - Change Prediction}
+        \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
+        \label{tab:change-prediction}
+    \end{table*}
 
     \section*{Conclusion and Next Steps}
 
