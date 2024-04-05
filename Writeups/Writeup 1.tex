@@ -80,7 +80,7 @@
 
     We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance can be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance or end of data, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
 
-    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (+, -) are sometimes assigned by agencies, but these grades were converted by dropping +/- for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of 0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
+    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (AA+, CCC-, etc.) are sometimes assigned by agencies, but these grades were converted by dropping the +/- for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of 0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
 
     \begin{figure*}
         \caption{Credit Ratings}
@@ -169,7 +169,7 @@
         \end{equation*}
     \end{itemize}
     
-    The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below.  Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls that also include more analyst questions.\footnote{We may want to, in future, normalize question count by call length.} Though somewhat noisy, our standalone positivity score and broader positive tone score do seem to correlate with higher ratings.\footnote{We are investigating outliers in tone.}
+    The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls that also include more analyst questions.\footnote{We may want to, in future, normalize question count by call length.} Though somewhat noisy, our standalone positivity score and broader positive tone score do seem to correlate with higher ratings (we are currently investigating outliers in tone).
 
     \begin{figure}[h!]
 		\centering
@@ -197,11 +197,11 @@
         \label{tab:model-comparison}
     \end{table*}
 
-    Table \ref{tab:model-comparison} shows prediction statistics for our initial set of classifiers - simple logistic regression models aiming to predict ratings (for predicting changes in rating, see Appendix Section \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type `Financial Statements' and `Market Capitalization' in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across a wide variety of metrics. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
+    Table \ref{tab:model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings (for predicting changes in rating, see Appendix Section \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type `Financial Statements' and `Market Capitalization' in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across a wide variety of metrics. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
 
     The left side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
     
-    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. It is clear that previous rating is driving success for our predictions, without much clear contribution from NLP features at the moment.
+    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important features as determined by the average drop in test accuracy when the feature is permuted 1,000 times (we are also working on assessing coefficient significance). It is clear that previous rating is driving success for our predictions, without much clear contribution from NLP features at the moment.
 
     % \begin{table*}[h!]
     %     \centering
@@ -250,6 +250,8 @@
 
     Another area of interest for us is continuing to pursue the approach in \cite{das_credit_2023}, which uses graph neural networks to model the relationships between companies in combination with tabular financial data and NLP features. Prerequisite to this approach is the construction of an undirected graph showing linkages between companies based on the earnings call data. We've begun work on this step from two angles. First, following the original paper, our Doc2Vec embeddings representing calls can be averaged for each company. A graph can then be constructed with connecting edges added for cases when the vectors for each company have cosine similarity above a certain threshhold. As a second approach, which also opens more opportunities for exploration even without a neural network, we have used transformer-based Named Entity Recognition to identify mentions of any company in each earnings call (some statistics are in Appendix Section \ref{sec:company-mentions}).
     
+    We are looking forward to further exploring advanced techniques and continuing to improve our project.
+
     \section*{Acknowledgements}
 
     Special thanks to the UC Berkeley Stats Department Statistical Computing Facility (SCF). Other acknowledgements: Libor Pospisil, Robert Thompson. GitHub Co-Pilot was used for python code generation (mostly for plotting and table creation/parsing).
@@ -345,7 +347,7 @@
 
     \label{sec:change-prediction}
 
-    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperHyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignores the non-majority classes and not perform balanced class weighting. More work is needed to either force balance weighting or change the grid search objective.
+    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignore the non-majority classes and not perform balanced class weighting. More work is needed to either force balanced weighting or change the grid search objective.
 
     \begin{table*}[h!]
         \centering
@@ -368,7 +370,7 @@
 
     \label{sec:company-mentions}
 
-    On average, each earnings call has \avgCompanyMentions \space company mentions - Figure \ref{fig:company-mentions} shows the distribution.
+    On average, each earnings call has \avgCompanyMentions \space company mentions. Figure \ref{fig:company-mentions} shows the distribution.
 
     \begin{figure}[h!]
 		\centering
@@ -377,6 +379,6 @@
         \label{fig:company-mentions}
 	\end{figure}
 
-    Though the vast majority of these mentions are likely to be of the company whose call is being discussed, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors within some calls. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
+    Though the vast majority of these mentions are likely to be of the company presenting the call, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
 
 \end{document}
