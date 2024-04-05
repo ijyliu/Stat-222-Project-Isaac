@@ -33,6 +33,10 @@
 \usepackage[autostyle, english = american]{csquotes}
 \MakeOuterQuote{"}
 
+% Centered fixed width column type
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
 \title{Textual Analysis and Financial Statements}
 \author{Isaac Liu with Owen Lin, Chengzheng Xing, and Sean Zhou}
 
