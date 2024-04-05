@@ -190,32 +190,25 @@
 
     \subsection*{Logistic Regression}
 
-    \begin{table*}
+    \begin{table*}[h!]
         \centering
         \caption{Model Comparison}
         \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
         \label{tab:model-comparison}
     \end{table*}
 
-    Table \ref{tab:model-comparison} shows prediction statistics for logistic regression models aiming to predict ratings (for predicting changes in rating, see \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type "Financial Statements" and "Market Capitalization" in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across the board. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
+    Table \ref{tab:model-comparison} shows prediction statistics for logistic regression models aiming to predict ratings (for predicting changes in rating, see Appendix Section \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type `Financial Statements' and `Market Capitalization' in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across the board. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
 
-    \begin{table*}
+    \begin{table*}[h!]
         \centering
         \caption{Classification Report - Most Complex Model}
         \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Classification_Report.tex}
         \label{tab:most-complex-classification-report}
     \end{table*}
 
-    Table \ref{tab:most-complex-classification-report} generally shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to arrive at these balanced weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data.
+    Table \ref{tab:most-complex-classification-report} generally shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to arrive at these balanced weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}).
 
-    % \begin{table*}
-    %     \centering
-    %     \caption{Best Parameters - Most Complex Model}
-    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
-    %     \label{tab:most-complex-best-params}
-    % \end{table*}
-
-    \begin{table*}
+    \begin{table*}[h!]
         \centering
         \caption{Permutation Importance - Most Complex Model}
         \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Permutation_Importance_Top_15.tex}
@@ -230,7 +223,7 @@
 
     We've also begun using the AutoML library Autogluon to explore a wider variety of classifiers. Autogluon runs a wide variety of state-of-the-art prediction algorithms and performs hyperparameter tuning. The results, shown in Table \ref{tab:autogluon-leaderboard} for all allowed predictors in our dataset (metadata about call and statement dates, the rating on the previous fixed quarter date, all the financial statement variables, all the constructed NLP features, and sector) can provide a good starting point for our further modelling choices.
 
-    \begin{table*}
+    \begin{table*}[h!]
         \centering
         \caption{Autogluon Leaderboard}
         \input{../Output/Modelling/Autogluon/Autogluon_Tabular_Only_SCF_Medium_Presets_leaderboard.tex}
@@ -279,6 +272,9 @@
 
     \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
 
+    \clearpage
+    \newpage
+
     \subsection{Observations by Quarter and Year}
 
     Figure \ref{fig:obs-by-quarter-year} demonstrates that the data is temporally unbalanced, with many companies entering the dataset in later years, after they first receive an observable credit rating.
@@ -289,6 +285,9 @@
         \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
         \label{fig:obs-by-quarter-year}
 	\end{figure}
+
+    \clearpage
+    \newpage
 
     \subsection{Altman's Z-Score}
 
@@ -312,13 +311,36 @@
         \text{Z-Score} = 3.3 A + 0.99 B + 0.6 C + 1.2 D + 1.4 E
     \end{equation*}
 
+    \clearpage
+    \newpage
+    \subsection{Logistic Regression - Most Complex Model - Additional Details}
+
+    \label{sec:most-complex-model-additional-details}
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Best Hyperparameters - Most Complex Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+        \label{tab:most-complex-best-params}
+    \end{table*}
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Confusion Matrix - Most Complex Model}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
+        \label{fig:most-confusion-matrix}
+	\end{figure}
+
+    \clearpage
+    \newpage
+
     \subsection{Logistic Regression - Predicting Changes in Rating}
 
     \label{sec:change-prediction}
 
-    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignores the non-majority classes and not perform balanced class weighting. More work is needed to either force balance weighting or change the grid search objective.
+    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperHyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignores the non-majority classes and not perform balanced class weighting. More work is needed to either force balance weighting or change the grid search objective.
 
-    \begin{table*}
+    \begin{table*}[h!]
         \centering
         \caption{Classification Report - Change Prediction}
         \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
