@@ -206,15 +206,20 @@
         \label{tab:most-complex-classification-report}
     \end{table*}
 
-    Table \ref{tab:most-complex-classification-report} generally shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes (Table \ref{tab:most-complex-best-params}). We performed grid search 5-fold cross validation to arrive at these balanced weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data.
+    Table \ref{tab:most-complex-classification-report} generally shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to arrive at these balanced weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data.
 
-    variable importance
+    % \begin{table*}
+    %     \centering
+    %     \caption{Best Parameters - Most Complex Model}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+    %     \label{tab:most-complex-best-params}
+    % \end{table*}
 
     \begin{table*}
         \centering
-        \caption{Best Parameters - Most Complex Model}
-        \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
-        \label{tab:most-complex-best-params}
+        \caption{Permutation Importance - Most Complex Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Permutation_Importance_Top_15.tex}
+        \label{tab:most-complex-permutation-importance}
     \end{table*}
 
     \section*{Conclusion and Next Steps}
