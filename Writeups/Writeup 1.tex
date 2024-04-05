@@ -70,10 +70,6 @@
 
     We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
 
-    A FULL LIST OF VARIABLES
-
-    INCLUDING SUM STATS FOR NUMERIC VARIABLES
-
     Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. To ensure comparability, we drop items missing any predictor variable. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
@@ -190,28 +186,14 @@
 
     \subsection*{Logistic Regression}
 
-    Our first model is a simple logistic regression
-
-    XXX logistic regression predictors
-
-    multinomial, balanced class weights, l1 penalty
-
-    variable importance
-
-    table of predictions
-
-    fitting and output
-
-    assumptions
-    
-    interpretation
-
     \begin{table*}
         \centering
         \caption{Model Comparison}
         \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
         \label{tab:model-comparison}
     \end{table*}
+
+    Table \ref{tab:model-comparison} shows prediction statistics for logistic regression models aiming to predict ratings (for predicting changes in rating, see \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type "Financial Statements" and "Market Capitalization" in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across the board. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
 
     \begin{table*}
         \centering
@@ -220,18 +202,15 @@
         \label{tab:most-complex-classification-report}
     \end{table*}
 
+    Table \ref{tab:most-complex-classification-report} generally shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes (Table \ref{tab:most-complex-best-params}). We performed grid search 5-fold cross validation to arrive at these balanced weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data.
+
+    variable importance
+
     \begin{table*}
         \centering
         \caption{Best Parameters - Most Complex Model}
         \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
         \label{tab:most-complex-best-params}
-    \end{table*}
-
-    \begin{table*}
-        \centering
-        \caption{Classification Report - Change Prediction}
-        \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
-        \label{tab:change-prediction}
     \end{table*}
 
     \section*{Conclusion and Next Steps}
@@ -258,7 +237,7 @@
     \begin{figure}[h!]
 		\centering
         \caption{Company Mentions}
-        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
+        \includegraphics[width=0.4925\textwidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
         \label{fig:company-mentions}
 	\end{figure}
 
@@ -323,5 +302,26 @@
     \begin{equation*}
         \text{Z-Score} = 3.3 A + 0.99 B + 0.6 C + 1.2 D + 1.4 E
     \end{equation*}
+
+    \subsection{Logistic Regression - Predicting Changes in Rating}
+
+    \label{sec:change-prediction}
+
+    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignores the non-majority classes and not perform balanced class weighting. More work is needed to either force balance weighting or change the grid search objective.
+
+    \begin{table*}
+        \centering
+        \caption{Classification Report - Change Prediction}
+        \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
+        \label{tab:change-prediction}
+    \end{table*}
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Confusion Matrix - Changes in Rating}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/change_model/change_model_confusion_matrix_no_title.png}
+        \label{fig:change-confusion-matrix}
+	\end{figure}
+
 
 \end{document}
