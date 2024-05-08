@@ -23,6 +23,8 @@
 \usepackage{bbm}
 \usepackage{comment}
 
+\usepackage{blindtext}
+
 \usepackage{longtable}
 
 \usepackage{subcaption}
@@ -72,13 +74,15 @@
 
     \section*{Data and Exploratory Data Analysis}
 
-    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
+    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached. An example of many of the variables for a company by fixed quarter date can be found in Appendix Section \ref{sec:one-obs-final-data}.
 
     Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. To ensure comparability, we drop items missing any predictor variable, as well as some companies with only a few (3 or less) quarters. We identified one bankruptcy in our data - Peabody Energy on April 13, 2016 - and on further investigation, removed some quarters with incorrect ratings. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
     We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance can be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance or end of data, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
+
+    POTENTIALLY MOVE ALL DATA CLEANING STEPS TO APPENDIX.
 
     Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (AA+, CCC-, etc.) are sometimes assigned by agencies, but these grades were converted by dropping the +/- for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of 0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
 
@@ -168,6 +172,8 @@
         \item FinBERT Positivity Score - \footnote{We originally considered directly incorporating FinBERT embeddings into our models, or creating an end-to-end classifier making use of a BERT model. Our calls, however, are too long for readily available transformer embeddings or models to efficiently and effectively represent.}
     \end{itemize}
 
+    Examples for readability and tone can be found in Appendix Section \ref{sec:nlp-examples}.
+
     We removed observations with outliers for these features, produced, for example, as a result of zeroes or low values in denominators.
     
     The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls. Though somewhat noisy, our FinBERT positivity score does seem to correlate with higher ratings.
@@ -193,80 +199,142 @@
 
     \subsection*{Logistic Regression}
 
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Logistic Regression Model Comparison}
+    %     \begin{minipage}[c]{0.45\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_smaller.tex}
+    %         \caption*{\footnotesize Exclude Previous Rating} 
+    %     \end{minipage}
+    %     \begin{minipage}[c]{0.45\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
+    %         \caption*{\footnotesize Include Previous Rating} 
+    %     \end{minipage}
+    %     \label{tab:logistic-regression-model-comparison}
+    % \end{table*}
+
     \begin{table*}[h!]
         \centering
         \caption{Logistic Regression Model Comparison}
-        \begin{minipage}[c]{0.45\linewidth}
-            \centering
-            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
-            \caption*{\footnotesize Include Previous Rating} 
-        \end{minipage}
-        \begin{minipage}[c]{0.45\linewidth}
-            \centering
-            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_smaller.tex}
-            \caption*{\footnotesize Exclude Previous Rating} 
-        \end{minipage}
+        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_middle.tex}
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Table \ref{tab:model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings (for predicting changes in rating, see Appendix Section \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type `Financial Statements' and `Market Capitalization' in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across a wide variety of metrics. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
-
-    The left side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+    Table \ref{tab:logistic-regression-model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings. For these models, we do not include the rating on the previous fixed quarter date (for those results, see Appendix Section \ref{sec:include-previous-rating}). For predicting changes in rating, see Appendix Section \ref{sec:change-prediction}.
     
-    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important features as determined by the average drop in test accuracy when the feature is permuted 1,000 times (we are also working on assessing coefficient significance). It is clear that previous rating is driving success for our predictions, without much clear contribution from NLP features at the moment.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by adding financial variables (for a list, see items marked as Variable Type XXX in Table \ref{tab:numeric_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
+
+    NOTE MCNEMAR?
+
+    The left side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+    
+    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
+
+    RANK NLP FEATURES?
 
     \begin{table*}[h!]
         \centering
-        \caption{Most Complex Logistic Regression Model - Permutation Importance}
-        \begin{minipage}[c]{0.49\linewidth}
-            \centering
-            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-            \caption*{\footnotesize Include Previous Rating} 
-        \end{minipage}
-        \begin{minipage}[c]{0.49\linewidth}
-            \centering
-            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-            \caption*{\footnotesize Exclude Previous Rating} 
-        \end{minipage}
-        \label{tab:logistic-most-complex-permutation-importance}
-    \end{table*}
-
-    Checking the sign of coefficients
-
-    \subsubsection*{XGBoost}
-
-    \begin{table*}[h!]
-        \centering
-        \caption{XGBoost Model Comparison}
+        \caption{Classification Report and Permutation Importance - Most Complex Logistic Regression Model}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
-            \input{../Output/Modelling/XGBoost/Tables/include_previous_model_comparison_df_smaller.tex}
-            \caption*{\footnotesize Include Previous Rating} 
+            %\caption{\footnotesize Classification Report - Most Complex Model} 
+            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
             %\label{tab:most-complex-classification-report}
         \end{minipage}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
-            \input{../Output/Modelling/XGBoost/Tables/exclude_previous_model_comparison_df_smaller.tex}
-            \caption*{\footnotesize Exclude Previous Rating} 
+            %\caption{\footnotesize Permutation Importance - Most Complex Model} 
+            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
             %\label{tab:most-complex-permutation-importance}
         \end{minipage}
-        \label{tab:xgboost-model-comparison}
+        \label{tab:logistic-most-complex-classification-report-and-permutation-importance}
     \end{table*}
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Most Complex Logistic Regression Model - Permutation Importance}
+    %     \begin{minipage}[c]{0.49\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+    %         \caption*{\footnotesize Exclude Previous Rating} 
+    %     \end{minipage}
+    %     \begin{minipage}[c]{0.49\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+    %         \caption*{\footnotesize Include Previous Rating} 
+    %     \end{minipage}
+    %     \label{tab:logistic-most-complex-permutation-importance}
+    % \end{table*}
+
+    We are also able to inspect the coefficients of our logistic regression model to see if their direction aligns with our intuition concerning the impact of individual features.
+
+    \subsubsection*{XGBoost}
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{XGBoost Model Comparison}
+    %     \begin{minipage}[c]{0.45\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/XGBoost/Tables/exclude_previous_model_comparison_df_smaller.tex}
+    %         \caption*{\footnotesize Exclude Previous Rating} 
+    %         %\label{tab:most-complex-permutation-importance}
+    %     \end{minipage}
+    %     \begin{minipage}[c]{0.45\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/XGBoost/Tables/include_previous_model_comparison_df_smaller.tex}
+    %         \caption*{\footnotesize Include Previous Rating} 
+    %         %\label{tab:most-complex-classification-report}
+    %     \end{minipage}
+    %     \label{tab:xgboost-model-comparison}
+    % \end{table*}
 
     \begin{table*}[h!]
         \centering
-        \caption{Most Complex XGBoost Model - Permutation Importance}
-        \begin{minipage}[c]{0.49\linewidth}
+        \caption{XGBoost Model Comparison}
+        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_model_comparison_df_middle.tex}
+        \label{tab:xgboost-model-comparison}
+    \end{table*}
+
+    In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Most Complex XGBoost Model - Permutation Importance}
+    %     \begin{minipage}[c]{0.49\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+    %         \caption*{\footnotesize Exclude Previous Rating} 
+    %     \end{minipage}
+    %     \begin{minipage}[c]{0.49\linewidth}
+    %         \centering
+    %         \input{../Output/Modelling/XGBoost/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+    %         \caption*{\footnotesize Include Previous Rating} 
+    %     \end{minipage}
+    %     \label{tab:xgboost-most-complex-permutation-importance}
+    % \end{table*}
+
+    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, appears to greatly improve performance.
+
+    % Discuss grid search
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Classification Report and Permutation Importance - Most Complex XGBoost Model}
+        \begin{minipage}[c]{0.45\linewidth}
             \centering
-            \input{../Output/Modelling/XGBoost/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-            \caption*{\footnotesize Include Previous Rating} 
+            %\caption{\footnotesize Classification Report - Most Complex Model} 
+            \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
+            %\label{tab:most-complex-classification-report}
         \end{minipage}
-        \begin{minipage}[c]{0.49\linewidth}
+        \begin{minipage}[c]{0.45\linewidth}
             \centering
+            %\caption{\footnotesize Permutation Importance - Most Complex Model} 
             \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-            \caption*{\footnotesize Exclude Previous Rating} 
+            %\label{tab:most-complex-permutation-importance}
         \end{minipage}
-        \label{tab:xgboost-most-complex-permutation-importance}
+        \label{tab:xgboost-most-complex-classification-report-and-permutation-importance}
     \end{table*}
 
     \subsubsection*{Graph Neural Network}
@@ -346,48 +414,67 @@
 
     \subsection{Examples of NLP Features}
 
+    \label{sec:nlp-examples}
+
     \subsubsection{Readability: Gunning-Fog Index}
 
-    "Gale Klappa: We are looking here. Yes.
-    Ted Hayden – Point State Capital: Okay. And the equity ratio is like 53? It’s a sliding scale I guess, right?
-    Gale Klappa: Pat, we had 52.2\%, 53\% up in utilities?
-    Patrick Keyes: 53.5 is the high end. We were underneath that.
-    Frederick Kuester: Midpoint is 51.
-    Gale Klappa: Yeah, our allowed range is 51\% to 53.5\%. As Pat said we were just under the 53.5\%."
+    \begin{em}
+        ``Gale Klappa: We are looking here. Yes.
 
-    Gunning-Fog = 8.5
+        Ted Hayden – Point State Capital: Okay. And the equity ratio is like 53? It’s a sliding scale I guess, right?
 
-    "We've reduced our group stores value by more than \$50 million and that’s in spite of the significant growth that our operations have being through in that period, and I think the other thing that’s key is the fact that our managers on our mines have risen to the challenge and certainly both the owned skills as far as our desire to see that all our operations manage their business as a commercially on - and with sound commercial decisions, as well as technically, and also treat our operations as if they were the owned and that’s something that we believe we have invested quite significantly over the last couple of years and we are confident that we will continue to be able to streamline decisions and optimize their efficiency and running our businesses because we do it with top executives on start."
+        Gale Klappa: Pat, we had 52.2\%, 53\% up in utilities?
+        
+        Patrick Keyes: 53.5 is the high end. We were underneath that.
+        
+        Frederick Kuester: Midpoint is 51.
+        
+        Gale Klappa: Yeah, our allowed range is 51\% to 53.5\%. As Pat said we were just under the 53.5\%.''
+    \end{em}
 
-    Gunning-Fog = 19.3
+    \textbf{Gunning-Fog: 8.5}
+
+    \begin{em}
+        ``We've reduced our group stores value by more than \$50 million and that’s in spite of the significant growth that our operations have being through in that period, and I think the other thing that’s key is the fact that our managers on our mines have risen to the challenge and certainly both the owned skills as far as our desire to see that all our operations manage their business as a commercially on - and with sound commercial decisions, as well as technically, and also treat our operations as if they were the owned and that’s something that we believe we have invested quite significantly over the last couple of years and we are confident that we will continue to be able to streamline decisions and optimize their efficiency and running our businesses because we do it with top executives on start.''
+    \end{em}
+
+    \textbf{Gunning-Fog: 19.3}
 
     \subsubsection{Tone (Principal Component)}
 
-    "We see a great runway still ahead given the fragmented global landscape in concert, management, and ticketing."
+    \begin{em}
+        ``We had one disappointment with the second well in terms of the zone not really being present in terms of what we were looking for.''
+    \end{em}
 
-    Tone = 10.3
+    \textbf{Tone: -2.9}
 
-    "We had one disappointment with the second well in terms of the zone not really being present in terms of what we were looking for."
+    \begin{em}
+        ``We see a great runway still ahead given the fragmented global landscape in concert, management, and ticketing.''
+    \end{em}
 
-    Tone = -2.9
+    \textbf{Tone: 10.3}
 
     \clearpage
     \newpage
 
     \subsection{Example of One Observation in Final Data}
 
-    \begin{figure*}
-        \caption{AAPL, DATE HERE}
+    \label{sec:one-obs-final-data}
+
+    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score. Sentiment and tone were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count was around average.
+
+    \begin{figure*}[h]
+        \caption{Apple Inc., October 1, 2014}
         \begin{subfigure}[h]{0.4925\textwidth}
             \centering
             \subcaption{Metadata, Rating, and NLP Features}
-            %\includegraphics[width=0.95\hsize]{../Output/Modelling/Logistic Regression/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+            \includegraphics[width=0.95\hsize]{../Output/NLP/aapl nlp.png}
         \end{subfigure}
         %\hfill
         \begin{subfigure}[h]{0.4925\textwidth}
             \centering
             \subcaption{Financial Data}
-            %\includegraphics[width=0.95\hsize]{../Output/Modelling/XGBoost/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+            \includegraphics[width=0.5\hsize]{../Output/NLP/aapl fin.png}
         \end{subfigure}
         \hfill
         \label{fig:one-obs-final-data}
@@ -439,6 +526,13 @@
     \clearpage
     \newpage
 
+    \subsection{Including Previous Rating}
+
+    \label{sec:include-previous-rating}
+
+    \clearpage
+    \newpage
+
     \subsection{Predicting Changes in Rating}
 
     \label{sec:change-prediction}
@@ -465,7 +559,7 @@
         \label{tab:change-model-comparison}
     \end{table*}
 
-    \begin{figure*}
+    \begin{figure*}[h!]
         \caption{Most Complex Model - Rating Changes Confusion Matrices}
         \begin{subfigure}[h]{0.4925\textwidth}
             \centering
