@@ -14,6 +14,12 @@
 {\bf Araci, Dogu.} 2019. ``{FinBERT}: {Financial} {Sentiment} {Analysis} with
   {Pre}-trained {Language} {Models}.'' arXiv:1908.10063 [cs].
 
+\harvarditem[Chawla et~al.]{N.~V. Chawla, K.~W. Bowyer, L.~O. Hall \harvardand\
+  W.~P. Kegelmeyer}{2002}{chawla_smote_2002}
+{\bf Chawla, N.~V., K.~W. Bowyer, L.~O. Hall, and W.~P. Kegelmeyer.} 2002.
+  ``{SMOTE}: {Synthetic} {Minority} {Over}-sampling {Technique}.'' {\em Journal
+  of Artificial Intelligence Research}, 16:~321--357. arXiv:1106.1813 [cs].
+
 \harvarditem[Das et~al.]{Sanjiv Das, Xin Huang, Soji Adeshina, Patrick Yang
   \harvardand\ Leonardo Bachega}{2023}{das_credit_2023}
 {\bf Das, Sanjiv, Xin Huang, Soji Adeshina, Patrick Yang, and Leonardo

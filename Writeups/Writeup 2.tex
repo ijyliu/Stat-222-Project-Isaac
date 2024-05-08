@@ -181,7 +181,7 @@
 
     \section*{Network of Firms}
 
-    In addition to our standard NLP features, which already capture a rich representation of calls, we also created a network graph representing the connections between firms based on mentions within calls. We deployed transformer-based Named-Entity Recognition (NER) \citep{spacy_spacy_2024} to identify company names in the text, then matched these names to standardized versions. An interative visualization of our entire network of firms (aggregating mentions up from the call level - where we also have a network) can be found at \url{https://sites.google.com/view/isaac-liu/company-mentions-network?authuser=0}, and a ~50\% sample of nodes (faster load time) can be found at \url{https://sites.google.com/view/isaac-liu/co-mentions-50-node-sample?authuser=0}.
+    In addition to our standard NLP features, which already capture a rich representation of calls, we also created a network graph representing the connections between firms based on mentions within calls. We deployed transformer-based Named-Entity Recognition (NER) \citep{spacy_spacy_2024} to identify company names in the text, then matched these names to standardized versions. An interative visualization of our entire network of firms (aggregating mentions up from the call level - where we also have a network) can be found at \url{https://sites.google.com/view/isaac-liu/company-mentions-network}, and a ~50\% sample of nodes (faster load time) can be found at \url{https://sites.google.com/view/isaac-liu/co-mentions-50-node-sample}.
 
     \section*{Modelling}
 
@@ -200,13 +200,11 @@
             \centering
             \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
             \caption*{\footnotesize Include Previous Rating} 
-            %\label{tab:most-complex-classification-report}
         \end{minipage}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
             \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_smaller.tex}
             \caption*{\footnotesize Exclude Previous Rating} 
-            %\label{tab:most-complex-permutation-importance}
         \end{minipage}
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
@@ -217,13 +215,23 @@
     
     The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important features as determined by the average drop in test accuracy when the feature is permuted 1,000 times (we are also working on assessing coefficient significance). It is clear that previous rating is driving success for our predictions, without much clear contribution from NLP features at the moment.
 
-    % Permutation Importance
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Permutation Importance - Most Complex Model}
-    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Permutation_Importance_Top_15.tex}
-    %     \label{tab:most-complex-permutation-importance}
-    % \end{table*}
+    \begin{table*}[h!]
+        \centering
+        \caption{Most Complex Logistic Regression Model - Permutation Importance}
+        \begin{minipage}[c]{0.49\linewidth}
+            \centering
+            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize Include Previous Rating} 
+        \end{minipage}
+        \begin{minipage}[c]{0.49\linewidth}
+            \centering
+            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize Exclude Previous Rating} 
+        \end{minipage}
+        \label{tab:logistic-most-complex-permutation-importance}
+    \end{table*}
+
+    Checking the sign of coefficients
 
     \subsubsection*{XGBoost}
 
@@ -243,6 +251,22 @@
             %\label{tab:most-complex-permutation-importance}
         \end{minipage}
         \label{tab:xgboost-model-comparison}
+    \end{table*}
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Most Complex XGBoost Model - Permutation Importance}
+        \begin{minipage}[c]{0.49\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize Include Previous Rating} 
+        \end{minipage}
+        \begin{minipage}[c]{0.49\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize Exclude Previous Rating} 
+        \end{minipage}
+        \label{tab:xgboost-most-complex-permutation-importance}
     \end{table*}
 
     \subsubsection*{Graph Neural Network}
@@ -319,11 +343,63 @@
 
     \clearpage
     \newpage
+
+    \subsection{Examples of NLP Features}
+
+    \subsubsection{Readability: Gunning-Fog Index}
+
+    "Gale Klappa: We are looking here. Yes.
+    Ted Hayden – Point State Capital: Okay. And the equity ratio is like 53? It’s a sliding scale I guess, right?
+    Gale Klappa: Pat, we had 52.2\%, 53\% up in utilities?
+    Patrick Keyes: 53.5 is the high end. We were underneath that.
+    Frederick Kuester: Midpoint is 51.
+    Gale Klappa: Yeah, our allowed range is 51\% to 53.5\%. As Pat said we were just under the 53.5\%."
+
+    Gunning-Fog = 8.5
+
+    "We've reduced our group stores value by more than \$50 million and that’s in spite of the significant growth that our operations have being through in that period, and I think the other thing that’s key is the fact that our managers on our mines have risen to the challenge and certainly both the owned skills as far as our desire to see that all our operations manage their business as a commercially on - and with sound commercial decisions, as well as technically, and also treat our operations as if they were the owned and that’s something that we believe we have invested quite significantly over the last couple of years and we are confident that we will continue to be able to streamline decisions and optimize their efficiency and running our businesses because we do it with top executives on start."
+
+    Gunning-Fog = 19.3
+
+    \subsubsection{Tone (Principal Component)}
+
+    "We see a great runway still ahead given the fragmented global landscape in concert, management, and ticketing."
+
+    Tone = 10.3
+
+    "We had one disappointment with the second well in terms of the zone not really being present in terms of what we were looking for."
+
+    Tone = -2.9
+
+    \clearpage
+    \newpage
+
+    \subsection{Example of One Observation in Final Data}
+
+    \begin{figure*}
+        \caption{AAPL, DATE HERE}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Metadata, Rating, and NLP Features}
+            %\includegraphics[width=0.95\hsize]{../Output/Modelling/Logistic Regression/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Financial Data}
+            %\includegraphics[width=0.95\hsize]{../Output/Modelling/XGBoost/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:one-obs-final-data}
+    \end{figure*}
+
+    \clearpage
+    \newpage
     \subsection{Logistic Regression - Most Complex Model - Additional Details}
 
-    \label{sec:most-complex-model-additional-details}
+    \label{sec:logistic-most-complex-model-additional-details}
 
-    Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
+    % Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
 
     % \begin{table*}[h!]
     %     \centering
@@ -342,25 +418,69 @@
     \clearpage
     \newpage
 
-    \subsection{Logistic Regression - Predicting Changes in Rating}
+    \subsection{XGBoost - Most Complex Model - Additional Details}
 
-    \label{sec:change-prediction}
-
-    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignore the non-majority classes and not perform balanced class weighting. More work is needed to either force balanced weighting or change the grid search objective.
+    % Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
 
     % \begin{table*}[h!]
     %     \centering
-    %     \caption{Classification Report - Change Prediction}
-    %     \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
-    %     \label{tab:change-prediction}
+    %     \caption{Best Hyperparameters - Most Complex Model}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+    %     \label{tab:most-complex-best-params}
     % \end{table*}
 
     % \begin{figure}[h!]
 	% 	\centering
-    %     \caption{Confusion Matrix - Changes in Rating}
-    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/change_model/change_model_confusion_matrix_no_title.png}
-    %     \label{fig:change-confusion-matrix}
+    %     \caption{Confusion Matrix - Most Complex Model}
+    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
+    %     \label{fig:most-complex-confusion-matrix}
 	% \end{figure}
+
+    \clearpage
+    \newpage
+
+    \subsection{Predicting Changes in Rating}
+
+    \label{sec:change-prediction}
+
+    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for classification, which is easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset.
+
+    Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes sligthly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Rating Changes Model Comparison}
+        \begin{minipage}[c]{0.45\linewidth}
+            \centering
+            \input{../Output/Modelling/Logistic Regression/Tables/change_smote_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Logistic Regression} 
+            %\label{tab:most-complex-classification-report}
+        \end{minipage}
+        \begin{minipage}[c]{0.45\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/change_smote_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize XGBoost} 
+            %\label{tab:most-complex-permutation-importance}
+        \end{minipage}
+        \label{tab:change-model-comparison}
+    \end{table*}
+
+    \begin{figure*}
+        \caption{Most Complex Model - Rating Changes Confusion Matrices}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Logistic Regression}
+            \includegraphics[width=0.95\hsize]{../Output/Modelling/Logistic Regression/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{XGBoost}
+            \includegraphics[width=0.95\hsize]{../Output/Modelling/XGBoost/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:change-confusion-matrix}
+    \end{figure*}
 
     \clearpage
     \newpage
@@ -369,7 +489,7 @@
 
     \label{sec:company-mentions}
 
-    On average, each earnings call has \avgCompanyMentions \space company mentions. Figure \ref{fig:company-mentions} shows the distribution.
+    On average, each earnings call has \avgCompanyMentions \space company mentions. Figure \ref{fig:company-mentions} shows the distribution. Note that many of these mentions are self-references, and do not provide linkages between firms.
 
     \begin{figure}[h!]
 		\centering
@@ -378,6 +498,6 @@
         \label{fig:company-mentions}
 	\end{figure}
 
-    Though the vast majority of these mentions are likely to be of the company presenting the call, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
+    POSSIBLY ADD NON SELF MENTION STATS???
 
 \end{document}
