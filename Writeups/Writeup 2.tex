@@ -1,0 +1,350 @@
+\documentclass{article}[11pt]
+
+\usepackage{natbib}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{color}
+\usepackage[margin=.75in, tmargin=0.71in, bmargin=0.71in]{geometry}
+\usepackage{url}
+
+\usepackage{chngcntr}
+\usepackage{appendix}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{todonotes}
+\usepackage{booktabs}
+\usepackage{lscape}
+\usepackage{caption}%
+\usepackage{bbm}
+\usepackage{comment}
+
+\usepackage{longtable}
+
+\usepackage{subcaption}
+
+\usepackage{bookmark}
+
+\usepackage{babel}
+\usepackage[autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+% Centered fixed width column type
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+\title{Textual Analysis and Financial Statements}
+\author{Isaac Liu with Owen Lin, Chengzheng Xing, and Sean Zhou}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=blue,
+    citecolor=black
+}
+
+% stattotex commands
+\input{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Average.tex}
+\input{../Output/All Data EDA/Tabular EDA/num_quarters_and_companies.tex}
+\input{../Output/All Data EDA/NLP EDA/avg_call_length.tex}
+
+\input{../Output/All Data EDA/Tabular EDA/share_of_ratings_same_as_previous_fixed_quarter_date.tex}
+
+\begin{document}
+
+	\maketitle
+
+    \section*{Introduction}
+
+    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors,\footnote{There is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}.} and by any parties seeking interpolated ratings for companies that do not have them.
+
+    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences.\footnote{Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information.} Features capturing call readability, transparency, and engagement join pre-trained language model representations of sentiment \citep{araci_finbert_2019} and traditional tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. We also make use of advances in the study of graph neural networks to model linkages between firms implied by mentions in calls. \citep{das_credit_2023}
+
+    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades. Unigram and bigram word frequencies were used with the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more recent techniques such as neural language models and a wider variety of algorithms for classification.
+
+    \section*{Data and Exploratory Data Analysis}
+
+    We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached.
+
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. To ensure comparability, we drop items missing any predictor variable. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+
+    \subsection*{Credit Ratings}
+
+    We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance can be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance or end of data, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
+
+    Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (AA+, CCC-, etc.) are sometimes assigned by agencies, but these grades were converted by dropping the +/- for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of 0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
+
+    \begin{figure*}
+        \caption{Credit Ratings}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Distribution}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/Distribution of Rating Issuances_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Change Between Fixed Quarter Dates}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/Change_Short_no_title.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:credit-ratings}
+    \end{figure*}
+
+    \subsection*{Earnings Calls}
+
+    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modeling_prep_financial_2024}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
+
+    \subsection*{Financial Statements}
+
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements (for a list, see variables marked as `Financial Statements' in Table \ref{tab:numeric_summary_statistics}), as well as company market capitalization. To prepare the data, we limit our observations to items reported in USD, check for and correct values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits are 000.00 and the item is above or below the 2.5\% and 97.5\% quantile, we divide by 1,000.} and check some accounting identities in \cite{das_credit_2023},\footnote{We check total liabilities are greated than current liabilities, total assets are greater than total current assets, and net sales (revenue) is greated than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
+
+    \begin{figure*}
+        \caption{Altman Z-Score}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Distribution}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/altman_z_score_all_data_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Average by Rating}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/mean_altman_Z_by_credit_rating_no_title.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:altman-z-score}
+    \end{figure*}
+
+    In some of our models, we make use of Altman's Z-score, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities \citep{altman_financial_1968} (for details on the construction of the score, see Appendix section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of Z-scores in our dataset. Traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to have a high chance of bankruptcy. The average scores for each rating in our data seem to align well with this interpretation, with high scores being associated with higher ratings in a linear manner. Aside from a few quirks on the ends of the rating spectrum (where not many companies and ratings are available), Z-Score is likely to be highly useful as a predictor.
+      
+    \subsection*{Sector}
+
+    The GCIS industry classification standard divides companies into 11 major industry sectors \citep{s_and_p_gics_2024}.\footnote{There are finer groupings as well, but this data was not easily obtainable for our project.} It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format \citep{kozlov_us_2022} and supplemented them with manual lookup. Figure \ref{fig:firms-by-sector} shows the sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors. However, when we quantize ratings and compute average values by sector, we do not see large differences, suggesting our results still may provide some generalizability. Though it is not yet clear that sector provides enough useful variation in rating to be a useful predictor, we still include it in our models, particularly as it may improve models including interactions (such as tree-based methods).
+
+    \begin{figure*}
+        \caption{Sector}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Firms by Sector}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_firms_by_sector_no_title.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Average Rating by Sector}
+            \includegraphics[width=0.95\hsize]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_average_credit_rating_by_sector_no_title.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:firms-by-sector}
+    \end{figure*}
+
+    \section*{NLP Features}
+
+    Our NLP features capture the transparency of discussion, level of engagement, and overall sentiment of calls.
+
+    \begin{itemize}
+        \item Numeric Transparency - Ratio of numbers to words in the word-tokenized call
+        \item Readability - We construct the Gunning-Fog grade-level readability score \citep{gunning_technique_1952} as 
+        \begin{equation*}
+            0.4 \times (\frac{\text{Words}}{\text{Sentences}} + 100 \times \frac{\text{3+ Syllable Words}}{\text{Words}})
+        \end{equation*}
+        \item Word Count
+        \item Number of Questions - Count of question marks - Normalized by call length/word count
+        \item Tone - Following \cite{price_earnings_2012}, we use the Harvard dictionary to count words falling in various categories (Positive, Negative, Active, Passive, etc.). Then we construct tone using the first principal component of the matrix with each call as a row and each column as one of the following:
+        \begin{equation*}
+            \frac{\text{Positive}}{\text{Negative}}, \frac{\text{Active}}{\text{Passive}}, \frac{\text{Strong}}{\text{Weak}}, \frac{\text{Overstated}}{\text{Understated}}
+        \end{equation*}
+        \item FinBERT Positivity Score - \footnote{We originally considered directly incorporating FinBERT embeddings into our models, or creating an end-to-end classifier making use of a BERT model. Our calls, however, are too long for readily available transformer embeddings or models to efficiently and effectively represent.}
+    \end{itemize}
+    
+    The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls that also include more analyst questions.\footnote{We may want to, in future, normalize question count by call length.} Though somewhat noisy, our standalone positivity score and broader positive tone score do seem to correlate with higher ratings (we are currently investigating outliers in tone).
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Distribution of NLP Features by Rating}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/NLP/hist_by_rating.png}
+        \label{fig:dist-nlp-by-rating}
+	\end{figure}
+
+    \section*{Network of Firms}
+
+    In addition to our standard NLP features, which already capture a rich representation of calls, we also created a network graph representing the connections between firms based on mentions within calls.
+
+    \section*{Modelling}
+
+    Our overall model architecture is of the form
+
+    \begin{equation*}
+        \text{Predicted Credit Rating} = f(\text{Altman-Z}, \text{Financial Variables}, \text{Sector}, \text{Previous Rating}, \text{NLP Features})
+    \end{equation*}
+
+    \subsection*{Logistic Regression}
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Model Comparison}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/model_comparison_df.tex}
+    %     \label{tab:model-comparison}
+    % \end{table*}
+
+    Table \ref{tab:model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings (for predicting changes in rating, see Appendix Section \ref{sec:change-prediction}). Rating Model 1 includes only Altman's Z-Score as a predictor - its overall accuracy is not much better than the majority baseline, though predictions are generally close to true ratings. Rating Model 2 adds a full suite of financial statement variables (for a list, see items marked as Variable Type `Financial Statements' and `Market Capitalization' in Table \ref{tab:numeric_summary_statistics}) and leads to improvements across a wide variety of metrics. Rating Model 3 adds industry sector and the previous rating as predictors, and achieves a very high level of accuracy which we are not currently able to improve upon by adding the NLP features in Rating Model 4.
+
+    The left side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows that our most complex model (Rating Model 4) generally performs well across all classes. This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+    
+    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important features as determined by the average drop in test accuracy when the feature is permuted 1,000 times (we are also working on assessing coefficient significance). It is clear that previous rating is driving success for our predictions, without much clear contribution from NLP features at the moment.
+
+    % Permutation Importance
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Permutation Importance - Most Complex Model}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Permutation_Importance_Top_15.tex}
+    %     \label{tab:most-complex-permutation-importance}
+    % \end{table*}
+
+    \subsubsection*{XGBoost}
+
+    \subsubsection*{Graph Neural Network}
+
+    \section*{Conclusion}
+
+    Overall, we have seen that we are able to predict credit ratings with a high degree of accuracy, but at the moment our results are largely driven by inclusion of the previous rating as a predictor. Our current NLP and textual features are unable to contribute much to improve our predictions. 
+
+    \section*{Acknowledgements}
+
+    Special thanks to the UC Berkeley Stats Department Statistical Computing Facility (SCF). Other acknowledgements: Libor Pospisil, Robert Thompson. GitHub Co-Pilot was used for python code generation (mostly for plotting and table creation/parsing).
+
+    \clearpage
+    \newpage
+
+    \bibliographystyle{aea}
+    \bibliography{Stat-222-Capstone}
+
+    \clearpage
+    \newpage
+
+    \appendix
+
+    % Reset and change numbering for figures and tables
+    \counterwithin{figure}{section}
+    \counterwithin{table}{section}
+
+    \section{Appendix}
+
+    \subsection{Summary Statistics for Numeric Variables}
+
+    Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
+
+    \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
+
+    \clearpage
+    \newpage
+
+    \subsection{Observations by Quarter and Year}
+
+    Figure \ref{fig:obs-by-quarter-year} demonstrates that the data is temporally unbalanced, with many companies entering the dataset in later years, after they first receive an observable credit rating.
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Observations by Quarter and Year}
+        \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
+        \label{fig:obs-by-quarter-year}
+	\end{figure}
+
+    \clearpage
+    \newpage
+
+    \subsection{Altman's Z-Score}
+
+    \label{sec:altman-z-score}
+
+    As in \cite{das_credit_2023}, the components of the Z-score are as follows:
+
+    \begin{itemize}
+        \item A: EBIT / Total Assets
+        \item B: Net Sales / Total Assets
+        \item C: Market Capitalization / Total Liabilities
+        \item D: Working Capital / Total Assets
+        \item E: Retained Earnings / Total Assets
+    \end{itemize}
+
+    We Winsorize extreme values of Ratio A, B, D, and E by setting the top and bottom 2.5\% of values to the 97.5 and 2.5 percentile, respectively. Due to the presence of additional outliers and the sourcing of market capitalization from a different dataset than the rest of the variables, Ratio C is instead Winsorized over the top and bottom 5\% of values. 
+
+    The ratios are combined via the following equation:
+
+    \begin{equation*}
+        \text{Z-Score} = 3.3 A + 0.99 B + 0.6 C + 1.2 D + 1.4 E
+    \end{equation*}
+
+    \clearpage
+    \newpage
+    \subsection{Logistic Regression - Most Complex Model - Additional Details}
+
+    \label{sec:most-complex-model-additional-details}
+
+    Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Best Hyperparameters - Most Complex Model}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
+    %     \label{tab:most-complex-best-params}
+    % \end{table*}
+
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{Confusion Matrix - Most Complex Model}
+    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
+    %     \label{fig:most-complex-confusion-matrix}
+	% \end{figure}
+
+    \clearpage
+    \newpage
+
+    \subsection{Logistic Regression - Predicting Changes in Rating}
+
+    \label{sec:change-prediction}
+
+    Table \ref{tab:change-prediction} shows that our most complex model (with the same variables as Rating Model 4) is able to predict changes in rating with a high degree of accuracy, and the weighted average statistics are as expected. Figure \ref{fig:change-confusion-matrix} displays the confusion matrix. We fine-tuned our hyperparameters for this model with an accuracy objective, and so grid search was allowed to completely ignore the non-majority classes and not perform balanced class weighting. More work is needed to either force balanced weighting or change the grid search objective.
+
+    % \begin{table*}[h!]
+    %     \centering
+    %     \caption{Classification Report - Change Prediction}
+    %     \input{../Output/Modelling/Logistic Regression/Tables/changes_table.tex}
+    %     \label{tab:change-prediction}
+    % \end{table*}
+
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{Confusion Matrix - Changes in Rating}
+    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/change_model/change_model_confusion_matrix_no_title.png}
+    %     \label{fig:change-confusion-matrix}
+	% \end{figure}
+
+    \clearpage
+    \newpage
+
+    \subsection{Company Mentions}
+
+    \label{sec:company-mentions}
+
+    On average, each earnings call has \avgCompanyMentions \space company mentions. Figure \ref{fig:company-mentions} shows the distribution.
+
+    \begin{figure}[h!]
+		\centering
+        \caption{Company Mentions}
+        \includegraphics[width=0.4925\textwidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
+        \label{fig:company-mentions}
+	\end{figure}
+
+    Though the vast majority of these mentions are likely to be of the company presenting the call, a casual glance at the data does suggest there are a fair number of mentions of partners, suppliers, and competitors. Our next step involves the use of entity resolution algorithms (trigram matching, supervised learning) to link these mentions to firm tickers in order to construct a graph of relationships.
+
+\end{document}
