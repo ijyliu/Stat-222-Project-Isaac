@@ -196,14 +196,14 @@
         \caption{Logistic Regression Model Comparison}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
-            \caption{\footnotesize Include Previous Rating} 
-            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df.tex}
+            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Include Previous Rating} 
             %\label{tab:most-complex-classification-report}
         \end{minipage}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
-            \caption{\footnotesize Exclude Previous Rating} 
-            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df.tex}
+            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Exclude Previous Rating} 
             %\label{tab:most-complex-permutation-importance}
         \end{minipage}
         \label{tab:logistic-regression-model-comparison}
@@ -224,6 +224,24 @@
     % \end{table*}
 
     \subsubsection*{XGBoost}
+
+    \begin{table*}[h!]
+        \centering
+        \caption{XGBoost Model Comparison}
+        \begin{minipage}[c]{0.45\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/include_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Include Previous Rating} 
+            %\label{tab:most-complex-classification-report}
+        \end{minipage}
+        \begin{minipage}[c]{0.45\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/exclude_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Exclude Previous Rating} 
+            %\label{tab:most-complex-permutation-importance}
+        \end{minipage}
+        \label{tab:xgboost-model-comparison}
+    \end{table*}
 
     \subsubsection*{Graph Neural Network}
 
