@@ -5,69 +5,61 @@ using gpu?  True
 beginning data load
 dataframe
   ticker fixed_quarter_date                                         transcript
-0    NEE         2012-01-01  Operator: Good day, everyone, and welcome to t...
-1    NEE         2012-04-01  Operator: Good day, everyone, and welcome to t...
-2    NEE         2012-07-01  Operator: Good day, everyone, and welcome to t...
-3    NEE         2012-10-01  Operator: Good day, everyone, and welcome to t...
-4    NEE         2013-01-01  Operator: Good day, everyone, and welcome to t...
-                                  company_mentioned  ...  fixed_quarter_date
-0                                               FPL  ...          2012-01-01
-1                                  ENERGY RESOURCES  ...          2012-01-01
-2                                              CITC  ...          2012-01-01
-3                                   DESERT SUNLIGHT  ...          2012-01-01
-4                                 ENERGY RESOURCES'  ...          2012-01-01
-5                                 RESEARCH DIVISION  ...          2012-01-01
-6                                             MCCOY  ...          2012-01-01
-7                                           GENESIS  ...          2012-01-01
-8                                  DEUTSCHE BANK AG  ...          2012-01-01
-9                                          MERCHANT  ...          2012-01-01
-10                         GOLDMAN SACHS GROUP INC.  ...          2012-01-01
-11       THE CALIFORNIA PUBLIC UTILITIES COMMISSION  ...          2012-01-01
-12                                             GEXA  ...          2012-01-01
-13                                 NEXTERA ENERGY'S  ...          2012-01-01
-14                                        LONE STAR  ...          2012-01-01
-15                                   NEXTERA ENERGY  ...          2012-01-01
-16                            FLORIDA POWER & LIGHT  ...          2012-01-01
-17                                 CRÉDIT SUISSE AG  ...          2012-01-01
-18                    FLORIDA POWER & LIGHT COMPANY  ...          2012-01-01
-19                           LONE STAR TRANSMISSION  ...          2012-01-01
-20                                             GAAP  ...          2012-01-01
-21                     NEXTERA ENERGY RESOURCES LLC  ...          2012-01-01
-22                                 NON-GAAP MEASURE  ...          2012-01-01
-23                               NON-GAAP FINANCIAL  ...          2012-01-01
-24           THE SECURITIES AND EXCHANGE COMMISSION  ...          2012-01-01
-25                                              PSC  ...          2012-01-01
-26                   THE SOUTHERN CALIFORNIA EDISON  ...          2012-01-01
-27                                         SEABROOK  ...          2012-01-01
-28  THE OFFICE OF ECONOMIC AND DEMOGRAPHIC RESEARCH  ...          2012-01-01
-29                                             RIEC  ...          2012-01-01
-30                       SOUTHERN CALIFORNIA EDISON  ...          2012-01-01
-31            THE FLORIDA PUBLIC SERVICE COMMISSION  ...          2012-01-01
-32                                    CRÉDIT SUISSE  ...          2012-01-01
-33                                              PTC  ...          2012-01-01
-34                                         CONGRESS  ...          2012-01-01
-35                            U.S. RENEWABLE ENERGY  ...          2012-01-01
-36                                    GOLDMAN SACHS  ...          2012-01-01
-37                                      SPAIN SOLAR  ...          2012-01-01
-38                              GLENROCK ASSOCIATES  ...          2012-01-01
-39                          GLENROCK ASSOCIATES LLC  ...          2012-01-01
-40                                    DEUTSCHE BANK  ...          2012-01-01
-
-[41 rows x 4 columns]
-Estimated Time to process:  596.7574693361918
-Time to process:  62.62513994375865
+0    LPX         2013-07-01  Operator: Good day, ladies and gentlemen, and ...
+1    LPX         2015-04-01  Operator: Good day ladies and gentlemen and we...
+2    LPX         2015-07-01  Operator: Good day, ladies and gentlemen, and ...
+3    LPX         2015-10-01  Operator: Good day, ladies and gentlemen, and ...
+4    LPX         2016-01-01  Operator: Good day, ladies and gentlemen, and ...
+                             company_mentioned  count ticker fixed_quarter_date
+0                                          OSB     11    LPX         2013-07-01
+1                                           LP     10    LPX         2013-07-01
+2                          D.A. DAVIDSON & CO.      7    LPX         2013-07-01
+3   THE BUCKINGHAM RESEARCH GROUP INCORPORATED      5    LPX         2013-07-01
+4                              ENGINEERED WOOD      5    LPX         2013-07-01
+5                                      CANEXEL      4    LPX         2013-07-01
+6              VERTICAL RESEARCH PARTNERS, LLC      4    LPX         2013-07-01
+7                          UBS INVESTMENT BANK      3    LPX         2013-07-01
+8                     RBC CAPITAL MARKETS, LLC      3    LPX         2013-07-01
+9        CREDIT AGRICOLE SECURITIES (USA) INC.      2    LPX         2013-07-01
+10                           RESEARCH DIVISION      2    LPX         2013-07-01
+11                                      SALLIE      2    LPX         2013-07-01
+12                                         EWP      2    LPX         2013-07-01
+13                                   ST MICHEL      2    LPX         2013-07-01
+14                     LOUISIANA-PACIFIC CORP.      1    LPX         2013-07-01
+15                          INVESTOR RELATIONS      1    LPX         2013-07-01
+16                                PEACE VALLEY      1    LPX         2013-07-01
+17                                        GAAP      1    LPX         2013-07-01
+18                          NON-GAAP FINANCIAL      1    LPX         2013-07-01
+19                  NEW WAVERLY TRANSPORTATION      1    LPX         2013-07-01
+20                                      CANFOR      1    LPX         2013-07-01
+21                                         EPA      1    LPX         2013-07-01
+22                            U.S. GREEN FIBER      1    LPX         2013-07-01
+23                                     MOLDING      1    LPX         2013-07-01
+24                    ENGINEERED WOOD PRODUCTS      1    LPX         2013-07-01
+25                                     ABITIBI      1    LPX         2013-07-01
+26                              MURPHY PLYWOOD      1    LPX         2013-07-01
+27                         BUCKINGHAM RESEARCH      1    LPX         2013-07-01
+28                                         UBS      1    LPX         2013-07-01
+29                                        CLSA      1    LPX         2013-07-01
+30                           VERTICAL PARTNERS      1    LPX         2013-07-01
+31                                   D.A. D.\n      1    LPX         2013-07-01
+32               TD SECURITIES EQUITY RESEARCH      1    LPX         2013-07-01
+33                               TD SECURITIES      1    LPX         2013-07-01
+34                         RBC CAPITAL MARKETS      1    LPX         2013-07-01
+Estimated Time to process:  503.87298115491865
+Time to process:  63.74247377316157
 combined dataframes
-   company_mentioned  count ticker fixed_quarter_date
-0                FPL     26    NEE         2012-01-01
-1   ENERGY RESOURCES     25    NEE         2012-01-01
-2               CITC     14    NEE         2012-01-01
-3    DESERT SUNLIGHT     10    NEE         2012-01-01
-4  ENERGY RESOURCES'      9    NEE         2012-01-01
-(267115, 4)
-      company_mentioned  count ticker fixed_quarter_date
-22               SIDOTI      1     KW         2014-04-01
-23      BANCO POPULAR’S      1     KW         2014-04-01
-24  WALL STREET JOURNAL      1     KW         2014-04-01
-25  THE BANK OF IRELAND      1     KW         2014-04-01
-26        MERRILL LYNCH      1     KW         2014-04-01
+                            company_mentioned  count ticker fixed_quarter_date
+0                                         OSB     11    LPX         2013-07-01
+1                                          LP     10    LPX         2013-07-01
+2                         D.A. DAVIDSON & CO.      7    LPX         2013-07-01
+3  THE BUCKINGHAM RESEARCH GROUP INCORPORATED      5    LPX         2013-07-01
+4                             ENGINEERED WOOD      5    LPX         2013-07-01
+(222284, 4)
+                     company_mentioned  count ticker fixed_quarter_date
+9   THE INTERIOR BOARD OF LAND APPEALS      1    WTI         2016-07-01
+10                                BSAE      1    WTI         2016-07-01
+11                               JWEST      1    WTI         2016-07-01
+12                  LADENBURG THALMANN      1    WTI         2016-07-01
+13                            MAHOGANY      1    WTI         2016-07-01
 Completed NER

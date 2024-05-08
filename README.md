@@ -4,9 +4,11 @@ Textual Analysis of Financial Statements
 
 Zhengxing Cheng, Owen Lin, Isaac Liu, Sean Zhou
 
-### Data Pipeline
+## Guidance
 
-`<img src="Output\Mind Maps.jpg" style="max-width: 100%; height: auto; display: block;" />`
+A variety of small datasets can be found in this repository. The main dataset we use for analysis is split into pieces contained in the folder `Data\All_Data\All_Data_with_NLP_Features`. The structure of our `Code` folders should be pretty self-explanatory.
+
+## Resources
 
 ### Project Updates
 
@@ -15,6 +17,10 @@ Slides [here](https://docs.google.com/presentation/d/1JJEnThJ8J-kww_SiqMceNVPTG_
 ### March 5 Presentation
 
 Slides [here](https://docs.google.com/presentation/d/1g28qdef5ddqo8jX7AW_3p60fzBnzMxD4_EPGpjcrWkU/edit#slide=id.p).
+
+### Final Presentation
+
+Slides [here](https://docs.google.com/presentation/d/1_AsMCNPxlaVB9atzXuxOjec1JGyA50DL5t6Grjlt5L8/edit#slide=id.p).
 
 ### Repo Filepaths
 

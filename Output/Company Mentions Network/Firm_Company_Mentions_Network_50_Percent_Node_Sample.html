@@ -1,0 +1,273 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+             #config {
+                 float: left;
+                 width: 400px;
+                 height: 600px;
+             }
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+            <div id="config"></div>
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "AmerisourceBergen Corp.", "label": "AmerisourceBergen Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Amgen Inc.", "label": "Amgen Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cardinal Health Inc.", "label": "Cardinal Health Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Walgreens Boots Alliance, Inc", "label": "Walgreens Boots Alliance, Inc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Information Resources, Inc.", "label": "Information Resources, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Johnson \u0026 Johnson", "label": "Johnson \u0026 Johnson", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Eli Lilly \u0026 Co.", "label": "Eli Lilly \u0026 Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "PerkinElmer Inc.", "label": "PerkinElmer Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "FedEx Corp.", "label": "FedEx Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Honeywell International Inc.", "label": "Honeywell International Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ACI Worldwide Inc.", "label": "ACI Worldwide Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Intel Corp.", "label": "Intel Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Tenet Healthcare Corp.", "label": "Tenet Healthcare Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Amkor Technology Inc.", "label": "Amkor Technology Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Arrow Electronics Inc.", "label": "Arrow Electronics Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Booz Allen Hamilton Inc.", "label": "Booz Allen Hamilton Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "CACI International Inc.", "label": "CACI International Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "CDW Corporation", "label": "CDW Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Entegris, Inc.", "label": "Entegris, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Google Inc.", "label": "Google Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Lam Research Corp.", "label": "Lam Research Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Micron Technology Inc.", "label": "Micron Technology Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Microsoft Corp.", "label": "Microsoft Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Motorola Solutions Inc.", "label": "Motorola Solutions Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Northrop Grumman Corp.", "label": "Northrop Grumman Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "PNM Resources Inc", "label": "PNM Resources Inc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "SCIENCE APPLICATIONS INTERNATIONAL CORPORATION", "label": "SCIENCE APPLICATIONS INTERNATIONAL CORPORATION", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Triumph Group, Inc.", "label": "Triumph Group, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "T-Mobile US Inc.", "label": "T-Mobile US Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Texas Eastern Transmission L.P.", "label": "Texas Eastern Transmission L.P.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Unisys Corp.", "label": "Unisys Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Community Health Systems, Inc.", "label": "Community Health Systems, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "AECOM", "label": "AECOM", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Autodesk, Inc.", "label": "Autodesk, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Intuit Inc.", "label": "Intuit Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Consolidated Communications Finance Co.", "label": "Consolidated Communications Finance Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Alaska Air Group Inc.", "label": "Alaska Air Group Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Alkermes plc", "label": "Alkermes plc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Big Lots Canada, Inc.", "label": "Big Lots Canada, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Crown Castle International Corp.", "label": "Crown Castle International Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cogent Communications Finance, Inc.", "label": "Cogent Communications Finance, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "CSG Systems International, Inc.", "label": "CSG Systems International, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "DTE Energy Center LLC", "label": "DTE Energy Center LLC", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Entravision Communications Corporation", "label": "Entravision Communications Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Expedia, Inc.", "label": "Expedia, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "FTI Consulting Inc.", "label": "FTI Consulting Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Interpublic Group of Cos. Inc.", "label": "Interpublic Group of Cos. Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Iron Mountain Inc.", "label": "Iron Mountain Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kratos Defense and Security Solutions, Inc.", "label": "Kratos Defense and Security Solutions, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kennedy-Wilson Holdings Inc.", "label": "Kennedy-Wilson Holdings Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Lamar Advertising Co.", "label": "Lamar Advertising Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Mercer International Inc.", "label": "Mercer International Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Martin Marietta Materials Inc.", "label": "Martin Marietta Materials Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Netflix, Inc.", "label": "Netflix, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Newell Brands Inc.", "label": "Newell Brands Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "New York Times Co. (The)", "label": "New York Times Co. (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Omnicom Group Inc.", "label": "Omnicom Group Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Open Text Corporation", "label": "Open Text Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Parker-Hannifin Corporation", "label": "Parker-Hannifin Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Roper Technologies Inc.", "label": "Roper Technologies Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Sonic Automotive Inc.", "label": "Sonic Automotive Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "SBA Telecommunications, Inc.", "label": "SBA Telecommunications, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Sinclair Broadcast Group Inc.", "label": "Sinclair Broadcast Group Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Starbucks Corp.", "label": "Starbucks Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Container Store Inc. (The)", "label": "Container Store Inc. (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "United Parcel Service Inc.", "label": "United Parcel Service Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Black Hills Corporation", "label": "Black Hills Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Electronic Arts Inc.", "label": "Electronic Arts Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hasbro, Inc.", "label": "Hasbro, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ManpowerGroup Inc.", "label": "ManpowerGroup Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Rockwell Automation Inc.", "label": "Rockwell Automation Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ameren Corporation", "label": "Ameren Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Entergy Corp", "label": "Entergy Corp", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Exelon Corp.", "label": "Exelon Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "NRG Energy Inc.", "label": "NRG Energy Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "PG\u0026E Corp.", "label": "PG\u0026E Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "AAR CORP.", "label": "AAR CORP.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Norfolk Southern Corp.", "label": "Norfolk Southern Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Trinity Industries Inc.", "label": "Trinity Industries Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Union Pacific Corporation", "label": "Union Pacific Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Koppers Holdings Inc.", "label": "Koppers Holdings Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Post Holdings, Inc.", "label": "Post Holdings, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Greenbrier Companies Inc. (The)", "label": "Greenbrier Companies Inc. (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "U.S. Silica Holdings, Inc.", "label": "U.S. Silica Holdings, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Southwest Airlines Co.", "label": "Southwest Airlines Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kennametal Inc.", "label": "Kennametal Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "MGM Resorts International", "label": "MGM Resorts International", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "TreeHouse Foods, Inc.", "label": "TreeHouse Foods, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Visteon Corporation", "label": "Visteon Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Owens Corning Inc", "label": "Owens Corning Inc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Pitney Bowes Inc.", "label": "Pitney Bowes Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Bristol-Myers Squibb Co.", "label": "Bristol-Myers Squibb Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cooper Companies, Inc. (The)", "label": "Cooper Companies, Inc. (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hologic Inc.", "label": "Hologic Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ITT Corp.", "label": "ITT Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ON Semiconductor Corporation", "label": "ON Semiconductor Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Caterpillar Inc.", "label": "Caterpillar Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Antero Resources Corporation", "label": "Antero Resources Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Sunoco LP", "label": "Sunoco LP", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Range Resources Corp.", "label": "Range Resources Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Vishay Intertechnology Inc.", "label": "Vishay Intertechnology Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Atmos Energy Corp.", "label": "Atmos Energy Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "NextEra Energy Inc.", "label": "NextEra Energy Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Targa Resources Corp.", "label": "Targa Resources Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Activision Blizzard, Inc.", "label": "Activision Blizzard, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ryman Hospitality Properties, Inc.", "label": "Ryman Hospitality Properties, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Toll Brothers Inc.", "label": "Toll Brothers Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kimberly-Clark Corp.", "label": "Kimberly-Clark Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Xcel Energy Inc.", "label": "Xcel Energy Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Otter Tail Corporation", "label": "Otter Tail Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Ball Corporation", "label": "Ball Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "New Gold Inc.", "label": "New Gold Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Boston Scientific Corporation", "label": "Boston Scientific Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Stryker Corporation", "label": "Stryker Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Kohl\u0027s Corp.", "label": "Kohl\u0027s Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Performance Food Group Inc.", "label": "Performance Food Group Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Packaging Corp. of America", "label": "Packaging Corp. of America", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Danaher Corp.", "label": "Danaher Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Emerson Electric Co.", "label": "Emerson Electric Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "3M Company", "label": "3M Company", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "CSI Compressco LP", "label": "CSI Compressco LP", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "H\u0026E Equipment Services Inc.", "label": "H\u0026E Equipment Services Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "PACCAR Inc.", "label": "PACCAR Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Timken Company (The)", "label": "Timken Company (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Chevron Corporation", "label": "Chevron Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cummins Inc.", "label": "Cummins Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cabot Corp.", "label": "Cabot Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Williams Companies Inc. (The)", "label": "Williams Companies Inc. (The)", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Devon Energy Corp.", "label": "Devon Energy Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "MRC Global (US) Inc.", "label": "MRC Global (US) Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "MSCI Inc.", "label": "MSCI Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hovnanian Enterprises Inc.", "label": "Hovnanian Enterprises Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Century Aluminum Company", "label": "Century Aluminum Company", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "CAESARS ENTERTAINMENT", "label": "CAESARS ENTERTAINMENT", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Eastman Chemical Co.", "label": "Eastman Chemical Co.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Eaton Corporation, PLC", "label": "Eaton Corporation, PLC", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "ConocoPhillips", "label": "ConocoPhillips", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Phillips 66", "label": "Phillips 66", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "EOG Resources Inc.", "label": "EOG Resources Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Freeport-McMoRan Oil \u0026 Gas LLC", "label": "Freeport-McMoRan Oil \u0026 Gas LLC", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Genesis Energy, L.P.", "label": "Genesis Energy, L.P.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nabors Industries Inc.", "label": "Nabors Industries Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "OWENS \u0026 MINOR, INC", "label": "OWENS \u0026 MINOR, INC", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Occidental Petroleum Corp.", "label": "Occidental Petroleum Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Nordstrom, Inc.", "label": "Nordstrom, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Keysight Technologies Inc.", "label": "Keysight Technologies Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "MDU Resources Group, Inc.", "label": "MDU Resources Group, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Holly Energy Partners LP", "label": "Holly Energy Partners LP", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "D.R. Horton Inc.", "label": "D.R. Horton Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Louisiana-Pacific Corp.", "label": "Louisiana-Pacific Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Snap-on Inc.", "label": "Snap-on Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Thermo Fisher Scientific Inc.", "label": "Thermo Fisher Scientific Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Stanley Black \u0026 Decker Inc.", "label": "Stanley Black \u0026 Decker Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "NorthWestern Corporation", "label": "NorthWestern Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Vector Ltd.", "label": "Vector Ltd.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "LKQ Corporation", "label": "LKQ Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Marathon Oil Corporation", "label": "Marathon Oil Corporation", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Cedar Fair L.P.", "label": "Cedar Fair L.P.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "SeaWorld Parks \u0026 Entertainment, Inc.", "label": "SeaWorld Parks \u0026 Entertainment, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Philip Morris International Inc", "label": "Philip Morris International Inc", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "EPR Properties", "label": "EPR Properties", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "IDACORP Inc.", "label": "IDACORP Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Royal Caribbean Cruises Ltd.", "label": "Royal Caribbean Cruises Ltd.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Hanesbrands Inc.", "label": "Hanesbrands Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Las Vegas Sands Corp.", "label": "Las Vegas Sands Corp.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Gibraltar Industries, Inc.", "label": "Gibraltar Industries, Inc.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "id": "Verisk Analytics, Inc.", "label": "Verisk Analytics, Inc.", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "AmerisourceBergen Corp.", "to": "Amgen Inc.", "width": 1}, {"from": "AmerisourceBergen Corp.", "to": "Cardinal Health Inc.", "width": 1}, {"from": "AmerisourceBergen Corp.", "to": "Walgreens Boots Alliance, Inc", "width": 8}, {"from": "Amgen Inc.", "to": "Information Resources, Inc.", "width": 2}, {"from": "Amgen Inc.", "to": "Johnson \u0026 Johnson", "width": 5}, {"from": "Amgen Inc.", "to": "Eli Lilly \u0026 Co.", "width": 4}, {"from": "Amgen Inc.", "to": "PerkinElmer Inc.", "width": 1}, {"from": "Cardinal Health Inc.", "to": "FedEx Corp.", "width": 1}, {"from": "Cardinal Health Inc.", "to": "Honeywell International Inc.", "width": 1}, {"from": "Cardinal Health Inc.", "to": "Johnson \u0026 Johnson", "width": 4}, {"from": "ACI Worldwide Inc.", "to": "Intel Corp.", "width": 1}, {"from": "ACI Worldwide Inc.", "to": "Tenet Healthcare Corp.", "width": 1}, {"from": "Intel Corp.", "to": "Amkor Technology Inc.", "width": 5}, {"from": "Intel Corp.", "to": "Arrow Electronics Inc.", "width": 3}, {"from": "Intel Corp.", "to": "Booz Allen Hamilton Inc.", "width": 1}, {"from": "Intel Corp.", "to": "CACI International Inc.", "width": 4}, {"from": "Intel Corp.", "to": "CDW Corporation", "width": 1}, {"from": "Intel Corp.", "to": "Entegris, Inc.", "width": 1}, {"from": "Intel Corp.", "to": "Google Inc.", "width": 3}, {"from": "Intel Corp.", "to": "Information Resources, Inc.", "width": 2}, {"from": "Intel Corp.", "to": "Lam Research Corp.", "width": 8}, {"from": "Intel Corp.", "to": "Micron Technology Inc.", "width": 3}, {"from": "Intel Corp.", "to": "Microsoft Corp.", "width": 20}, {"from": "Intel Corp.", "to": "Motorola Solutions Inc.", "width": 2}, {"from": "Intel Corp.", "to": "Northrop Grumman Corp.", "width": 3}, {"from": "Intel Corp.", "to": "PNM Resources Inc", "width": 3}, {"from": "Intel Corp.", "to": "SCIENCE APPLICATIONS INTERNATIONAL CORPORATION", "width": 4}, {"from": "Intel Corp.", "to": "Triumph Group, Inc.", "width": 1}, {"from": "Intel Corp.", "to": "T-Mobile US Inc.", "width": 1}, {"from": "Intel Corp.", "to": "Texas Eastern Transmission L.P.", "width": 3}, {"from": "Intel Corp.", "to": "Unisys Corp.", "width": 9}, {"from": "Tenet Healthcare Corp.", "to": "Community Health Systems, Inc.", "width": 1}, {"from": "AECOM", "to": "Autodesk, Inc.", "width": 1}, {"from": "Autodesk, Inc.", "to": "CDW Corporation", "width": 2}, {"from": "Autodesk, Inc.", "to": "Google Inc.", "width": 1}, {"from": "Autodesk, Inc.", "to": "Intuit Inc.", "width": 1}, {"from": "Autodesk, Inc.", "to": "Microsoft Corp.", "width": 3}, {"from": "CDW Corporation", "to": "Consolidated Communications Finance Co.", "width": 2}, {"from": "CDW Corporation", "to": "Microsoft Corp.", "width": 4}, {"from": "Google Inc.", "to": "Alaska Air Group Inc.", "width": 2}, {"from": "Google Inc.", "to": "Alkermes plc", "width": 1}, {"from": "Google Inc.", "to": "Big Lots Canada, Inc.", "width": 1}, {"from": "Google Inc.", "to": "Crown Castle International Corp.", "width": 3}, {"from": "Google Inc.", "to": "Cogent Communications Finance, Inc.", "width": 1}, {"from": "Google Inc.", "to": "Consolidated Communications Finance Co.", "width": 8}, {"from": "Google Inc.", "to": "CSG Systems International, Inc.", "width": 2}, {"from": "Google Inc.", "to": "Community Health Systems, Inc.", "width": 1}, {"from": "Google Inc.", "to": "DTE Energy Center LLC", "width": 1}, {"from": "Google Inc.", "to": "Entravision Communications Corporation", "width": 1}, {"from": "Google Inc.", "to": "Expedia, Inc.", "width": 18}, {"from": "Google Inc.", "to": "FTI Consulting Inc.", "width": 1}, {"from": "Google Inc.", "to": "Intuit Inc.", "width": 1}, {"from": "Google Inc.", "to": "Interpublic Group of Cos. Inc.", "width": 1}, {"from": "Google Inc.", "to": "Iron Mountain Inc.", "width": 1}, {"from": "Google Inc.", "to": "Johnson \u0026 Johnson", "width": 4}, {"from": "Google Inc.", "to": "Kratos Defense and Security Solutions, Inc.", "width": 2}, {"from": "Google Inc.", "to": "Kennedy-Wilson Holdings Inc.", "width": 1}, {"from": "Google Inc.", "to": "Lamar Advertising Co.", "width": 2}, {"from": "Google Inc.", "to": "Mercer International Inc.", "width": 1}, {"from": "Google Inc.", "to": "Martin Marietta Materials Inc.", "width": 2}, {"from": "Google Inc.", "to": "Microsoft Corp.", "width": 3}, {"from": "Google Inc.", "to": "Motorola Solutions Inc.", "width": 3}, {"from": "Google Inc.", "to": "Netflix, Inc.", "width": 5}, {"from": "Google Inc.", "to": "Newell Brands Inc.", "width": 1}, {"from": "Google Inc.", "to": "New York Times Co. (The)", "width": 7}, {"from": "Google Inc.", "to": "Omnicom Group Inc.", "width": 10}, {"from": "Google Inc.", "to": "Open Text Corporation", "width": 2}, {"from": "Google Inc.", "to": "Parker-Hannifin Corporation", "width": 1}, {"from": "Google Inc.", "to": "Roper Technologies Inc.", "width": 1}, {"from": "Google Inc.", "to": "Sonic Automotive Inc.", "width": 2}, {"from": "Google Inc.", "to": "SBA Telecommunications, Inc.", "width": 1}, {"from": "Google Inc.", "to": "Sinclair Broadcast Group Inc.", "width": 1}, {"from": "Google Inc.", "to": "Starbucks Corp.", "width": 1}, {"from": "Google Inc.", "to": "Container Store Inc. (The)", "width": 3}, {"from": "Google Inc.", "to": "T-Mobile US Inc.", "width": 6}, {"from": "Google Inc.", "to": "Unisys Corp.", "width": 4}, {"from": "Google Inc.", "to": "United Parcel Service Inc.", "width": 1}, {"from": "Microsoft Corp.", "to": "Amkor Technology Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Arrow Electronics Inc.", "width": 4}, {"from": "Microsoft Corp.", "to": "Booz Allen Hamilton Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Black Hills Corporation", "width": 4}, {"from": "Microsoft Corp.", "to": "Cogent Communications Finance, Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Electronic Arts Inc.", "width": 4}, {"from": "Microsoft Corp.", "to": "Entravision Communications Corporation", "width": 4}, {"from": "Microsoft Corp.", "to": "Hasbro, Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Information Resources, Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Interpublic Group of Cos. Inc.", "width": 14}, {"from": "Microsoft Corp.", "to": "Kennedy-Wilson Holdings Inc.", "width": 4}, {"from": "Microsoft Corp.", "to": "Lamar Advertising Co.", "width": 2}, {"from": "Microsoft Corp.", "to": "ManpowerGroup Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Martin Marietta Materials Inc.", "width": 4}, {"from": "Microsoft Corp.", "to": "Motorola Solutions Inc.", "width": 18}, {"from": "Microsoft Corp.", "to": "Netflix, Inc.", "width": 4}, {"from": "Microsoft Corp.", "to": "Open Text Corporation", "width": 24}, {"from": "Microsoft Corp.", "to": "Rockwell Automation Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Sonic Automotive Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "SBA Telecommunications, Inc.", "width": 2}, {"from": "Microsoft Corp.", "to": "Starbucks Corp.", "width": 2}, {"from": "Microsoft Corp.", "to": "T-Mobile US Inc.", "width": 6}, {"from": "Microsoft Corp.", "to": "Texas Eastern Transmission L.P.", "width": 3}, {"from": "Microsoft Corp.", "to": "Unisys Corp.", "width": 14}, {"from": "Ameren Corporation", "to": "Entergy Corp", "width": 3}, {"from": "Ameren Corporation", "to": "Exelon Corp.", "width": 3}, {"from": "Entergy Corp", "to": "Exelon Corp.", "width": 4}, {"from": "Entergy Corp", "to": "Information Resources, Inc.", "width": 1}, {"from": "Entergy Corp", "to": "Motorola Solutions Inc.", "width": 1}, {"from": "Entergy Corp", "to": "NRG Energy Inc.", "width": 2}, {"from": "Entergy Corp", "to": "PG\u0026E Corp.", "width": 1}, {"from": "Exelon Corp.", "to": "NRG Energy Inc.", "width": 5}, {"from": "Exelon Corp.", "to": "PG\u0026E Corp.", "width": 3}, {"from": "AAR CORP.", "to": "Northrop Grumman Corp.", "width": 1}, {"from": "AAR CORP.", "to": "Norfolk Southern Corp.", "width": 1}, {"from": "AAR CORP.", "to": "Trinity Industries Inc.", "width": 4}, {"from": "AAR CORP.", "to": "Union Pacific Corporation", "width": 5}, {"from": "Northrop Grumman Corp.", "to": "Kratos Defense and Security Solutions, Inc.", "width": 2}, {"from": "Northrop Grumman Corp.", "to": "Triumph Group, Inc.", "width": 3}, {"from": "Norfolk Southern Corp.", "to": "FedEx Corp.", "width": 3}, {"from": "Norfolk Southern Corp.", "to": "Koppers Holdings Inc.", "width": 2}, {"from": "Norfolk Southern Corp.", "to": "Martin Marietta Materials Inc.", "width": 2}, {"from": "Norfolk Southern Corp.", "to": "Post Holdings, Inc.", "width": 1}, {"from": "Norfolk Southern Corp.", "to": "Union Pacific Corporation", "width": 1}, {"from": "Union Pacific Corporation", "to": "Greenbrier Companies Inc. (The)", "width": 1}, {"from": "Union Pacific Corporation", "to": "U.S. Silica Holdings, Inc.", "width": 3}, {"from": "Alaska Air Group Inc.", "to": "Southwest Airlines Co.", "width": 1}, {"from": "Alaska Air Group Inc.", "to": "Starbucks Corp.", "width": 4}, {"from": "Southwest Airlines Co.", "to": "Entravision Communications Corporation", "width": 2}, {"from": "Southwest Airlines Co.", "to": "Honeywell International Inc.", "width": 1}, {"from": "Southwest Airlines Co.", "to": "Information Resources, Inc.", "width": 5}, {"from": "Southwest Airlines Co.", "to": "Kennametal Inc.", "width": 1}, {"from": "Southwest Airlines Co.", "to": "MGM Resorts International", "width": 2}, {"from": "Southwest Airlines Co.", "to": "NRG Energy Inc.", "width": 1}, {"from": "Southwest Airlines Co.", "to": "Container Store Inc. (The)", "width": 1}, {"from": "Starbucks Corp.", "to": "Honeywell International Inc.", "width": 2}, {"from": "Starbucks Corp.", "to": "Kennedy-Wilson Holdings Inc.", "width": 6}, {"from": "Starbucks Corp.", "to": "MGM Resorts International", "width": 6}, {"from": "Starbucks Corp.", "to": "Netflix, Inc.", "width": 2}, {"from": "Starbucks Corp.", "to": "New York Times Co. (The)", "width": 4}, {"from": "Starbucks Corp.", "to": "Sonic Automotive Inc.", "width": 6}, {"from": "Starbucks Corp.", "to": "TreeHouse Foods, Inc.", "width": 4}, {"from": "Starbucks Corp.", "to": "T-Mobile US Inc.", "width": 1}, {"from": "Starbucks Corp.", "to": "Visteon Corporation", "width": 2}, {"from": "Information Resources, Inc.", "to": "Honeywell International Inc.", "width": 1}, {"from": "Information Resources, Inc.", "to": "Owens Corning Inc", "width": 1}, {"from": "Information Resources, Inc.", "to": "Pitney Bowes Inc.", "width": 1}, {"from": "Johnson \u0026 Johnson", "to": "Bristol-Myers Squibb Co.", "width": 1}, {"from": "Johnson \u0026 Johnson", "to": "Cooper Companies, Inc. (The)", "width": 6}, {"from": "Johnson \u0026 Johnson", "to": "Hologic Inc.", "width": 6}, {"from": "Johnson \u0026 Johnson", "to": "Eli Lilly \u0026 Co.", "width": 2}, {"from": "Johnson \u0026 Johnson", "to": "Omnicom Group Inc.", "width": 2}, {"from": "Eli Lilly \u0026 Co.", "to": "Bristol-Myers Squibb Co.", "width": 8}, {"from": "Eli Lilly \u0026 Co.", "to": "Unisys Corp.", "width": 1}, {"from": "PerkinElmer Inc.", "to": "ITT Corp.", "width": 1}, {"from": "Amkor Technology Inc.", "to": "Micron Technology Inc.", "width": 2}, {"from": "Amkor Technology Inc.", "to": "Texas Eastern Transmission L.P.", "width": 1}, {"from": "Micron Technology Inc.", "to": "Arrow Electronics Inc.", "width": 3}, {"from": "Micron Technology Inc.", "to": "Lam Research Corp.", "width": 1}, {"from": "Micron Technology Inc.", "to": "ON Semiconductor Corporation", "width": 1}, {"from": "Micron Technology Inc.", "to": "Texas Eastern Transmission L.P.", "width": 1}, {"from": "Texas Eastern Transmission L.P.", "to": "Arrow Electronics Inc.", "width": 1}, {"from": "Texas Eastern Transmission L.P.", "to": "Caterpillar Inc.", "width": 4}, {"from": "Antero Resources Corporation", "to": "Sunoco LP", "width": 1}, {"from": "Sunoco LP", "to": "Range Resources Corp.", "width": 7}, {"from": "Arrow Electronics Inc.", "to": "Vishay Intertechnology Inc.", "width": 2}, {"from": "Atmos Energy Corp.", "to": "NextEra Energy Inc.", "width": 1}, {"from": "Atmos Energy Corp.", "to": "Targa Resources Corp.", "width": 2}, {"from": "Activision Blizzard, Inc.", "to": "Netflix, Inc.", "width": 6}, {"from": "Netflix, Inc.", "to": "Crown Castle International Corp.", "width": 2}, {"from": "Netflix, Inc.", "to": "Cogent Communications Finance, Inc.", "width": 18}, {"from": "Netflix, Inc.", "to": "Consolidated Communications Finance Co.", "width": 2}, {"from": "Netflix, Inc.", "to": "CSG Systems International, Inc.", "width": 2}, {"from": "Netflix, Inc.", "to": "Hasbro, Inc.", "width": 4}, {"from": "Netflix, Inc.", "to": "Ryman Hospitality Properties, Inc.", "width": 2}, {"from": "Netflix, Inc.", "to": "T-Mobile US Inc.", "width": 6}, {"from": "Netflix, Inc.", "to": "Toll Brothers Inc.", "width": 2}, {"from": "Big Lots Canada, Inc.", "to": "Hasbro, Inc.", "width": 1}, {"from": "Big Lots Canada, Inc.", "to": "Kimberly-Clark Corp.", "width": 2}, {"from": "Hasbro, Inc.", "to": "Entravision Communications Corporation", "width": 1}, {"from": "Hasbro, Inc.", "to": "Open Text Corporation", "width": 4}, {"from": "Black Hills Corporation", "to": "Xcel Energy Inc.", "width": 2}, {"from": "Xcel Energy Inc.", "to": "Otter Tail Corporation", "width": 4}, {"from": "Ball Corporation", "to": "New Gold Inc.", "width": 1}, {"from": "Boston Scientific Corporation", "to": "Hologic Inc.", "width": 1}, {"from": "Hologic Inc.", "to": "Stryker Corporation", "width": 1}, {"from": "FedEx Corp.", "to": "Community Health Systems, Inc.", "width": 1}, {"from": "FedEx Corp.", "to": "Iron Mountain Inc.", "width": 1}, {"from": "FedEx Corp.", "to": "Kohl\u0027s Corp.", "width": 1}, {"from": "FedEx Corp.", "to": "MGM Resorts International", "width": 1}, {"from": "FedEx Corp.", "to": "Open Text Corporation", "width": 1}, {"from": "FedEx Corp.", "to": "Performance Food Group Inc.", "width": 1}, {"from": "FedEx Corp.", "to": "Packaging Corp. of America", "width": 1}, {"from": "FedEx Corp.", "to": "Triumph Group, Inc.", "width": 2}, {"from": "FedEx Corp.", "to": "Unisys Corp.", "width": 1}, {"from": "FedEx Corp.", "to": "United Parcel Service Inc.", "width": 4}, {"from": "Honeywell International Inc.", "to": "Danaher Corp.", "width": 1}, {"from": "Honeywell International Inc.", "to": "Emerson Electric Co.", "width": 1}, {"from": "Honeywell International Inc.", "to": "ITT Corp.", "width": 1}, {"from": "Honeywell International Inc.", "to": "3M Company", "width": 1}, {"from": "Honeywell International Inc.", "to": "Motorola Solutions Inc.", "width": 1}, {"from": "Honeywell International Inc.", "to": "PNM Resources Inc", "width": 1}, {"from": "Honeywell International Inc.", "to": "Rockwell Automation Inc.", "width": 2}, {"from": "Honeywell International Inc.", "to": "Triumph Group, Inc.", "width": 1}, {"from": "Caterpillar Inc.", "to": "CSI Compressco LP", "width": 2}, {"from": "Caterpillar Inc.", "to": "Emerson Electric Co.", "width": 14}, {"from": "Caterpillar Inc.", "to": "H\u0026E Equipment Services Inc.", "width": 4}, {"from": "Caterpillar Inc.", "to": "Otter Tail Corporation", "width": 4}, {"from": "Caterpillar Inc.", "to": "PACCAR Inc.", "width": 2}, {"from": "Caterpillar Inc.", "to": "Rockwell Automation Inc.", "width": 2}, {"from": "Caterpillar Inc.", "to": "Timken Company (The)", "width": 4}, {"from": "Emerson Electric Co.", "to": "Chevron Corporation", "width": 1}, {"from": "Emerson Electric Co.", "to": "T-Mobile US Inc.", "width": 1}, {"from": "PACCAR Inc.", "to": "Cummins Inc.", "width": 12}, {"from": "Rockwell Automation Inc.", "to": "ITT Corp.", "width": 1}, {"from": "Rockwell Automation Inc.", "to": "Kennametal Inc.", "width": 1}, {"from": "Cabot Corp.", "to": "Range Resources Corp.", "width": 8}, {"from": "Cabot Corp.", "to": "Williams Companies Inc. (The)", "width": 10}, {"from": "Range Resources Corp.", "to": "Chevron Corporation", "width": 1}, {"from": "Range Resources Corp.", "to": "Devon Energy Corp.", "width": 12}, {"from": "Williams Companies Inc. (The)", "to": "Chevron Corporation", "width": 6}, {"from": "Williams Companies Inc. (The)", "to": "MRC Global (US) Inc.", "width": 2}, {"from": "Crown Castle International Corp.", "to": "SBA Telecommunications, Inc.", "width": 4}, {"from": "Crown Castle International Corp.", "to": "T-Mobile US Inc.", "width": 16}, {"from": "SBA Telecommunications, Inc.", "to": "MSCI Inc.", "width": 2}, {"from": "SBA Telecommunications, Inc.", "to": "T-Mobile US Inc.", "width": 11}, {"from": "T-Mobile US Inc.", "to": "Entravision Communications Corporation", "width": 4}, {"from": "T-Mobile US Inc.", "to": "MGM Resorts International", "width": 2}, {"from": "T-Mobile US Inc.", "to": "Open Text Corporation", "width": 2}, {"from": "Consolidated Communications Finance Co.", "to": "Cummins Inc.", "width": 1}, {"from": "Consolidated Communications Finance Co.", "to": "Hovnanian Enterprises Inc.", "width": 2}, {"from": "Century Aluminum Company", "to": "Motorola Solutions Inc.", "width": 1}, {"from": "Motorola Solutions Inc.", "to": "Chevron Corporation", "width": 1}, {"from": "Motorola Solutions Inc.", "to": "CAESARS ENTERTAINMENT", "width": 1}, {"from": "Motorola Solutions Inc.", "to": "Eastman Chemical Co.", "width": 1}, {"from": "Motorola Solutions Inc.", "to": "FTI Consulting Inc.", "width": 1}, {"from": "Motorola Solutions Inc.", "to": "Iron Mountain Inc.", "width": 1}, {"from": "Cummins Inc.", "to": "Parker-Hannifin Corporation", "width": 1}, {"from": "Parker-Hannifin Corporation", "to": "Eaton Corporation, PLC", "width": 1}, {"from": "Hovnanian Enterprises Inc.", "to": "Toll Brothers Inc.", "width": 1}, {"from": "ConocoPhillips", "to": "Chevron Corporation", "width": 2}, {"from": "ConocoPhillips", "to": "ITT Corp.", "width": 1}, {"from": "ConocoPhillips", "to": "Kennedy-Wilson Holdings Inc.", "width": 1}, {"from": "ConocoPhillips", "to": "MRC Global (US) Inc.", "width": 3}, {"from": "ConocoPhillips", "to": "Phillips 66", "width": 1}, {"from": "Chevron Corporation", "to": "EOG Resources Inc.", "width": 1}, {"from": "Chevron Corporation", "to": "Freeport-McMoRan Oil \u0026 Gas LLC", "width": 6}, {"from": "Chevron Corporation", "to": "Greenbrier Companies Inc. (The)", "width": 1}, {"from": "Chevron Corporation", "to": "Genesis Energy, L.P.", "width": 1}, {"from": "Chevron Corporation", "to": "ITT Corp.", "width": 1}, {"from": "Chevron Corporation", "to": "MRC Global (US) Inc.", "width": 8}, {"from": "Chevron Corporation", "to": "Nabors Industries Inc.", "width": 3}, {"from": "Chevron Corporation", "to": "OWENS \u0026 MINOR, INC", "width": 2}, {"from": "Chevron Corporation", "to": "Open Text Corporation", "width": 1}, {"from": "Chevron Corporation", "to": "Occidental Petroleum Corp.", "width": 1}, {"from": "Chevron Corporation", "to": "PNM Resources Inc", "width": 1}, {"from": "Chevron Corporation", "to": "Phillips 66", "width": 3}, {"from": "Kennedy-Wilson Holdings Inc.", "to": "Nordstrom, Inc.", "width": 2}, {"from": "MRC Global (US) Inc.", "to": "PG\u0026E Corp.", "width": 6}, {"from": "MRC Global (US) Inc.", "to": "Phillips 66", "width": 3}, {"from": "Phillips 66", "to": "Genesis Energy, L.P.", "width": 1}, {"from": "Phillips 66", "to": "Open Text Corporation", "width": 1}, {"from": "CSG Systems International, Inc.", "to": "Keysight Technologies Inc.", "width": 1}, {"from": "CSG Systems International, Inc.", "to": "MDU Resources Group, Inc.", "width": 2}, {"from": "Nabors Industries Inc.", "to": "Devon Energy Corp.", "width": 2}, {"from": "Open Text Corporation", "to": "Danaher Corp.", "width": 1}, {"from": "Open Text Corporation", "to": "Mercer International Inc.", "width": 1}, {"from": "Open Text Corporation", "to": "Roper Technologies Inc.", "width": 1}, {"from": "CAESARS ENTERTAINMENT", "to": "FTI Consulting Inc.", "width": 2}, {"from": "FTI Consulting Inc.", "to": "Holly Energy Partners LP", "width": 1}, {"from": "D.R. Horton Inc.", "to": "Louisiana-Pacific Corp.", "width": 1}, {"from": "Danaher Corp.", "to": "3M Company", "width": 1}, {"from": "Danaher Corp.", "to": "Roper Technologies Inc.", "width": 1}, {"from": "Danaher Corp.", "to": "Snap-on Inc.", "width": 2}, {"from": "Danaher Corp.", "to": "Thermo Fisher Scientific Inc.", "width": 1}, {"from": "3M Company", "to": "Post Holdings, Inc.", "width": 2}, {"from": "Snap-on Inc.", "to": "Stanley Black \u0026 Decker Inc.", "width": 1}, {"from": "DTE Energy Center LLC", "to": "NorthWestern Corporation", "width": 1}, {"from": "DTE Energy Center LLC", "to": "PG\u0026E Corp.", "width": 1}, {"from": "DTE Energy Center LLC", "to": "Vector Ltd.", "width": 12}, {"from": "NorthWestern Corporation", "to": "Devon Energy Corp.", "width": 4}, {"from": "PG\u0026E Corp.", "to": "NRG Energy Inc.", "width": 1}, {"from": "Vector Ltd.", "to": "Toll Brothers Inc.", "width": 1}, {"from": "Devon Energy Corp.", "to": "LKQ Corporation", "width": 4}, {"from": "Devon Energy Corp.", "to": "Marathon Oil Corporation", "width": 1}, {"from": "Electronic Arts Inc.", "to": "Cedar Fair L.P.", "width": 3}, {"from": "Cedar Fair L.P.", "to": "SeaWorld Parks \u0026 Entertainment, Inc.", "width": 1}, {"from": "Eastman Chemical Co.", "to": "Philip Morris International Inc", "width": 1}, {"from": "EPR Properties", "to": "IDACORP Inc.", "width": 1}, {"from": "Eaton Corporation, PLC", "to": "Triumph Group, Inc.", "width": 1}, {"from": "Triumph Group, Inc.", "to": "Royal Caribbean Cruises Ltd.", "width": 1}, {"from": "Iron Mountain Inc.", "to": "Pitney Bowes Inc.", "width": 1}, {"from": "Kohl\u0027s Corp.", "to": "Hanesbrands Inc.", "width": 1}, {"from": "MGM Resorts International", "to": "Interpublic Group of Cos. Inc.", "width": 1}, {"from": "MGM Resorts International", "to": "Las Vegas Sands Corp.", "width": 1}, {"from": "MGM Resorts International", "to": "Royal Caribbean Cruises Ltd.", "width": 1}, {"from": "Interpublic Group of Cos. Inc.", "to": "Omnicom Group Inc.", "width": 7}, {"from": "Interpublic Group of Cos. Inc.", "to": "Pitney Bowes Inc.", "width": 1}, {"from": "Newell Brands Inc.", "to": "Stanley Black \u0026 Decker Inc.", "width": 1}, {"from": "New York Times Co. (The)", "to": "Ryman Hospitality Properties, Inc.", "width": 1}, {"from": "New York Times Co. (The)", "to": "Sinclair Broadcast Group Inc.", "width": 1}, {"from": "Toll Brothers Inc.", "to": "Nordstrom, Inc.", "width": 4}, {"from": "Owens Corning Inc", "to": "Koppers Holdings Inc.", "width": 1}, {"from": "Owens Corning Inc", "to": "Gibraltar Industries, Inc.", "width": 1}, {"from": "Pitney Bowes Inc.", "to": "Post Holdings, Inc.", "width": 1}, {"from": "Post Holdings, Inc.", "to": "Verisk Analytics, Inc.", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 100,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+                  // if this network requires displaying the configure window,
+                  // put it in its div
+                  options.configure["container"] = document.getElementById("config");
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
