@@ -167,6 +167,8 @@
         \end{equation*}
         \item FinBERT Positivity Score - \footnote{We originally considered directly incorporating FinBERT embeddings into our models, or creating an end-to-end classifier making use of a BERT model. Our calls, however, are too long for readily available transformer embeddings or models to efficiently and effectively represent.}
     \end{itemize}
+
+    We removed observations with missing values or outliers for these features, produced, for example, as a result of zeroes or low values in denominators.
     
     The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls. Though somewhat noisy, our FinBERT positivity score does seem to correlate with higher ratings.
 
