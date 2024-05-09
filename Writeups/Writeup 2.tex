@@ -245,8 +245,6 @@
 
     RANK NLP FEATURES?
 
-    We are also able to inspect the coefficients of our logistic regression model to see if their direction aligns with our intuition concerning the impact of individual features.
-
     \subsubsection*{XGBoost}
 
     In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
