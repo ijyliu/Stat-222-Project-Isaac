@@ -198,7 +198,7 @@
         \text{Predicted Credit Rating} = f(\text{Altman-Z}, \text{Financial Variables}, \text{Sector}, \text{Previous Rating}, \text{NLP Features})
     \end{equation*}
 
-    We performed an 80-20 train-test split on our data, and used 5-fold cross validation to inform our hyperparameter tuning for the Logistic Regression and XGBoost models.
+    We performed an 80-20 train-test split on our data, and used 5-fold cross validation to select hyperparameters for the Logistic Regression and XGBoost models.
 
     \subsection*{Logistic Regression}
 
@@ -215,24 +215,15 @@
 
     NOTE MCNEMAR?
 
-    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. 
-    
-    %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
-
-    FOR ADDITIONAL HYPERPARAMETER DETAILS SEE...
-    
-    The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
-
-    RANK NLP FEATURES?
-
     \begin{table*}[h!]
         \centering
-        \caption{Classification Report and Permutation Importance - Most Complex Logistic Regression Model}
+        \caption{Confusion Matrix and Permutation Importance - Most Complex Logistic Regression Model}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
             %\caption{\footnotesize Classification Report - Most Complex Model} 
-            \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
+            %\input{../Output/Modelling/Logistic Regression/exclude_previous_rating_model_3/exclude_previous_rating_model_3_confusion_matrix_no_title.png}
             %\label{tab:most-complex-classification-report}
+            \includegraphics[width=0.95\hsize]{../Output/Modelling/Logistic Regression/exclude_previous_rating_model_3/exclude_previous_rating_model_3_confusion_matrix_no_title.png}
         \end{minipage}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
@@ -242,6 +233,17 @@
         \end{minipage}
         \label{tab:logistic-most-complex-classification-report-and-permutation-importance}
     \end{table*}
+
+
+    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. 
+    
+    %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+
+    FOR ADDITIONAL HYPERPARAMETER DETAILS SEE...
+    
+    The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
+
+    RANK NLP FEATURES?
 
     We are also able to inspect the coefficients of our logistic regression model to see if their direction aligns with our intuition concerning the impact of individual features.
 
@@ -262,12 +264,13 @@
 
     \begin{table*}[h!]
         \centering
-        \caption{Classification Report and Permutation Importance - Most Complex XGBoost Model}
+        \caption{Confusion Matrix and Permutation Importance - Most Complex XGBoost Model}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
             %\caption{\footnotesize Classification Report - Most Complex Model} 
-            \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
+            %\input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
             %\label{tab:most-complex-classification-report}
+            \includegraphics[width=0.95\hsize]{../Output/Modelling/XGBoost/exclude_previous_rating_model_3/exclude_previous_rating_model_3_confusion_matrix_no_title.png}
         \end{minipage}
         \begin{minipage}[c]{0.45\linewidth}
             \centering
