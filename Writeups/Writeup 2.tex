@@ -55,6 +55,9 @@
 
 % stattotex commands
 \input{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Average.tex}
+
+\input{../Output/All Data EDA/NLP EDA - NER on Company Names/Calls with Non Self Mentions.tex}
+
 \input{../Output/All Data EDA/Tabular EDA/num_quarters_and_companies.tex}
 \input{../Output/All Data EDA/NLP EDA/avg_call_length.tex}
 
@@ -109,7 +112,7 @@
 
     \subsection*{Financial Statements}
 
-    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios, levels, and changes in variables. (for a list, see variables marked as `Financial Statements' in Table \ref{tab:numeric_summary_statistics})
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios and levels of variables. (for a list, see variables in Table \ref{tab:financial_summary_statistics})
     
     To prepare the data, we limit our observations to items reported in USD, check for and correct values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits are 000.00 and the item is above or below the 2.5\% and 97.5\% quantile, we divide by 1,000.} and check some accounting identities in \cite{das_credit_2023},\footnote{We check total liabilities are greated than current liabilities, total assets are greater than total current assets, and net sales (revenue) is greated than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
 
@@ -155,7 +158,7 @@
 
     \section*{NLP Features}
 
-    Our NLP features capture the transparency of discussion, level of engagement, and overall sentiment of calls.
+    We make use of techniques from Natural Language Processing (NLP) to create features to capture the transparency of discussion, level of engagement, and overall sentiment of calls.
 
     \begin{itemize}
         \item Numeric Transparency - Ratio of numbers to words in the word-tokenized call
@@ -197,6 +200,8 @@
         \text{Predicted Credit Rating} = f(\text{Altman-Z}, \text{Financial Variables}, \text{Sector}, \text{Previous Rating}, \text{NLP Features})
     \end{equation*}
 
+    We performed an 80-20 train-test split on our data, and used 5-fold cross validation to inform our hyperparameter tuning for the Logistic Regression and XGBoost models.
+
     \subsection*{Logistic Regression}
 
     Table \ref{tab:logistic-regression-model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings. For these models, we do not include the rating on the previous fixed quarter date (for those results, see Appendix Section \ref{sec:include-previous-rating}). For predicting changes in rating, see Appendix Section \ref{sec:change-prediction}.
@@ -208,7 +213,7 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by adding financial variables (for a list, see items marked as Variable Type XXX in Table \ref{tab:numeric_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by adding financial variables (for a list, see items marked as Variable Type ``Additional Ratios'', ``Financial Statements'', and ``'' in Table \ref{tab:numeric_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
 
     NOTE MCNEMAR?
 
@@ -305,13 +310,19 @@
 
     GRAPH NN EDA
 
+    Only \noCallsWithNonSelfMentions \space (\shareCallsWithNonSelfMentions \space) have mentions of another company. On average, these calls  mention XXX distinct companies.
+
     TRANSDUCTIVE VERSUS INDUCTIVE
 
     CONTRAST with Das et al \cite{das_credit_2023} and note usage of mentions and not cosine similarities
 
     \section*{Conclusion}
 
-    Overall, we have seen that we are able to predict credit ratings with a high degree of accuracy, but at the moment our results are largely driven by inclusion of the previous rating as a predictor. Our current NLP and textual features are unable to contribute much to improve our predictions. 
+    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features.
+
+    DISCUSS GRAPH NN RESULTS
+
+    Future work may want to incorporate metadata - days since call, dates and time series components, etc.
 
     \section*{Acknowledgements}
 
@@ -334,11 +345,28 @@
 
     \section{Appendix}
 
-    \subsection{Summary Statistics for Numeric Variables}
+    \subsection{Example of One Observation in Final Data}
 
-    Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
+    \label{sec:one-obs-final-data}
 
-    \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
+    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score. Sentiment and tone were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count was around average.
+
+    \begin{figure*}[h]
+        \caption{Apple Inc., October 1, 2014}
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Metadata, Rating, and NLP Features}
+            \includegraphics[width=0.95\hsize]{../Output/NLP/aapl nlp.png}
+        \end{subfigure}
+        %\hfill
+        \begin{subfigure}[h]{0.4925\textwidth}
+            \centering
+            \subcaption{Financial Data}
+            \includegraphics[width=0.5\hsize]{../Output/NLP/aapl fin.png}
+        \end{subfigure}
+        \hfill
+        \label{fig:one-obs-final-data}
+    \end{figure*}
 
     \clearpage
     \newpage
@@ -353,6 +381,25 @@
         \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
         \label{fig:obs-by-quarter-year}
 	\end{figure}
+    
+    % \clearpage
+    % \newpage
+
+    % \subsection{Summary Statistics for Numeric Variables}
+    % % Potentially replace with just summary statistics for financial variables
+
+    % Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
+
+    % \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
+
+    \clearpage
+    \newpage
+
+    \subsection{Summary Statistics for Financial Variables}
+
+    Table \ref{tab:financial_summary_statistics} shows summary statistics for all numeric variables in our dataset. Other important variables are explained in the main text.
+
+    \input{../Output/All Data EDA/Tabular EDA/Financial_Summary_Statistics.tex}
 
     \clearpage
     \newpage
@@ -426,32 +473,6 @@
 
     \clearpage
     \newpage
-
-    \subsection{Example of One Observation in Final Data}
-
-    \label{sec:one-obs-final-data}
-
-    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score. Sentiment and tone were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count was around average.
-
-    \begin{figure*}[h]
-        \caption{Apple Inc., October 1, 2014}
-        \begin{subfigure}[h]{0.4925\textwidth}
-            \centering
-            \subcaption{Metadata, Rating, and NLP Features}
-            \includegraphics[width=0.95\hsize]{../Output/NLP/aapl nlp.png}
-        \end{subfigure}
-        %\hfill
-        \begin{subfigure}[h]{0.4925\textwidth}
-            \centering
-            \subcaption{Financial Data}
-            \includegraphics[width=0.5\hsize]{../Output/NLP/aapl fin.png}
-        \end{subfigure}
-        \hfill
-        \label{fig:one-obs-final-data}
-    \end{figure*}
-
-    \clearpage
-    \newpage
     \subsection{Logistic Regression - Most Complex Model - Additional Details}
 
     \label{sec:logistic-most-complex-model-additional-details}
@@ -500,6 +521,44 @@
 
     \label{sec:include-previous-rating}
 
+    As a reminder, \shareNotChanges \space of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). Therefore, including rating on the previous fixed quarter date in our predictions leads it to far outweigh the impact of other variables. Table \ref{tab:include-previous-model-comparison} demonstrates our accuracy performance is anchored around the share of ratings that remain the same (with the strange exception of Logistic Regression with Altman Z-Scores only). NLP Features do not add value.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Model Comparison Including Previous Rating}
+        \begin{minipage}[c]{0.495\linewidth}
+            \centering
+            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize Logistic Regression} 
+        \end{minipage}
+        \begin{minipage}[c]{0.495\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/include_previous_model_comparison_df_smaller.tex}
+            \caption*{\footnotesize XGBoost} 
+        \end{minipage}
+        \label{tab:include-previous-model-comparison}
+    \end{table*}
+
+    Table \ref{tab:include-previous-permutation-importance} substantiates this finding, showing that shuffling previous rating variables leads to a large drop in accuracy. Financial variables round out the list of important contributing features, and contribute far less information.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Permutation Importance Including Previous Rating}
+        \begin{minipage}[c]{0.495\linewidth}
+            \centering
+            \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize Logistic Regression} 
+        \end{minipage}
+        \begin{minipage}[c]{0.495\linewidth}
+            \centering
+            \input{../Output/Modelling/XGBoost/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
+            \caption*{\footnotesize XGBoost} 
+        \end{minipage}
+        \label{tab:include-previous-permutation-importance}
+    \end{table*}
+
+    Previous rating might be available in some real-world prediction scenarios, but absent in others. For predictions for ratings for unrated or entirely new companies or for investors without any rating data, it would not be present, though in standard scenarios concerning movements from quarter to quarter for well-known companies with significant history, it could be.
+
     \clearpage
     \newpage
 
@@ -507,9 +566,9 @@
 
     \label{sec:change-prediction}
 
-    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for classification, which is easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset.
+    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income are already quarterly changes in a company's financial position).
 
-    Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes sligthly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
+    Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
 
     \begin{table*}[h!]
         \centering
@@ -545,23 +604,5 @@
         \hfill
         \label{fig:change-confusion-matrix}
     \end{figure*}
-
-    \clearpage
-    \newpage
-
-    \subsection{Company Mentions}
-
-    \label{sec:company-mentions}
-
-    On average, each earnings call has \avgCompanyMentions \space company mentions. Figure \ref{fig:company-mentions} shows the distribution. Note that many of these mentions are self-references, and do not provide linkages between firms.
-
-    \begin{figure}[h!]
-		\centering
-        \caption{Company Mentions}
-        \includegraphics[width=0.4925\textwidth,keepaspectratio=true]{../Output/All Data EDA/NLP EDA - NER on Company Names/Company Mentions Distribution No Title.png}
-        \label{fig:company-mentions}
-	\end{figure}
-
-    POSSIBLY ADD NON SELF MENTION STATS???
 
 \end{document}
