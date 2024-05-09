@@ -175,9 +175,7 @@
         \item FinBERT Positivity Score - \footnote{We originally considered directly incorporating FinBERT embeddings into our models, or creating an end-to-end classifier making use of a BERT model. Our calls, however, are too long for readily available transformer embeddings or models to efficiently and effectively represent.}
     \end{itemize}
 
-    Examples for readability and tone can be found in Appendix Section \ref{sec:nlp-examples}.
-
-    We removed observations with outliers for these features, produced, for example, as a result of zeroes or low values in denominators.
+    Examples for readability and tone can be found in Appendix Section \ref{sec:nlp-examples}. We removed observations with outliers for any NLP feature, produced, for example, as a result of zeroes or low values in denominators.
     
     The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary and also have less readable calls (higher Gunning-Fog grade level). It appears to be the case that higher quality companies tend to have longer calls. Though somewhat noisy, our FinBERT positivity score does seem to correlate with higher ratings.
 
@@ -213,11 +211,15 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by adding financial variables (for a list, see items marked as Variable Type ``Additional Ratios'', ``Financial Statements'', and ``'' in Table \ref{tab:numeric_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
 
     NOTE MCNEMAR?
 
-    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. 
+    
+    %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+
+    FOR ADDITIONAL HYPERPARAMETER DETAILS SEE...
     
     The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
@@ -310,7 +312,7 @@
 
     GRAPH NN EDA
 
-    Only \noCallsWithNonSelfMentions \space (\shareCallsWithNonSelfMentions \space) have mentions of another company. On average, these calls  mention XXX distinct companies.
+    Only \noCallsWithNonSelfMentions \space calls (\shareCallsWithNonSelfMentions) have mentions of another company. On average, these calls mention \avgDistinctNonSelfCompaniesMentionedNoZero \space distinct other companies.
 
     TRANSDUCTIVE VERSUS INDUCTIVE
 
@@ -323,6 +325,8 @@
     DISCUSS GRAPH NN RESULTS
 
     Future work may want to incorporate metadata - days since call, dates and time series components, etc.
+
+    Incorporate graph of weighted edges, experiment with different layers
 
     \section*{Acknowledgements}
 
@@ -349,7 +353,7 @@
 
     \label{sec:one-obs-final-data}
 
-    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score. Sentiment and tone were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count was around average.
+    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score. Sentiment and tone were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count/call length was around average.
 
     \begin{figure*}[h]
         \caption{Apple Inc., October 1, 2014}
@@ -381,23 +385,13 @@
         \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
         \label{fig:obs-by-quarter-year}
 	\end{figure}
-    
-    % \clearpage
-    % \newpage
-
-    % \subsection{Summary Statistics for Numeric Variables}
-    % % Potentially replace with just summary statistics for financial variables
-
-    % Table \ref{tab:numeric_summary_statistics} shows summary statistics for all numeric variables in our dataset. Important numeric and categorical variables are explained in the main text. We also have numerous date variables, which we may use in future predictions.
-
-    % \input{../Output/All Data EDA/Tabular EDA/Numeric_Summary_Statistics.tex}
 
     \clearpage
     \newpage
 
     \subsection{Summary Statistics for Financial Variables}
 
-    Table \ref{tab:financial_summary_statistics} shows summary statistics for all numeric variables in our dataset. Other important variables are explained in the main text.
+    Table \ref{tab:financial_summary_statistics} shows summary statistics for the financial variables we include in our models, including sub-components of Altman's Z Score. Other important variables are explained in the main text.
 
     \input{../Output/All Data EDA/Tabular EDA/Financial_Summary_Statistics.tex}
 
