@@ -77,6 +77,10 @@
 
 \begin_body
 
+\begin_layout Section*
+Graph Convolutional Network
+\end_layout
+
 \begin_layout Standard
 A GraphSage GCN is trained across a number of timesteps (here indexed by
  
@@ -174,6 +178,338 @@ The operations for each timestep ultimately represent a layer of the neural
  The entire process is trained end-to-end with cross entropy loss.
  We perform weight decay at rate 5e-4 and train for 100 epochs at a learning
  rate of 0.01.
+\end_layout
+
+\begin_layout Section*
+McNemar's Test
+\end_layout
+
+\begin_layout Standard
+We make use of McNemar's Test to check for statistically significant differences
+ between our models without NLP features (
+\begin_inset Quotes eld
+\end_inset
+
+Model 2
+\begin_inset Quotes erd
+\end_inset
+
+) and including NLP features (
+\begin_inset Quotes eld
+\end_inset
+
+Model 3
+\begin_inset Quotes erd
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+This test makes use of the following contingency table using counts over
+ observations in our test dataset:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Model 3 Correct
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Model 3 Incorrect
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Row Total
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Model 2 Correct
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $a+b$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Model 2 Incorrect
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c+d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Column Total
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $a+c$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $b+d$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $n$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under the null hypothesis of identical performance, the marginal probabilities
+ of each model being correct and incorrect are the same: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p_{a}+p_{b}=p_{a}+p_{c}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\[
+p_{c}+p_{d}=p_{b}+p_{d}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which reduces to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+H_{0}:p_{b}=p_{c}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+H_{1}:p_{b}\neq p_{c}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The test statistic is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{(b-c)^{2}}{b+c}\sim\chi_{1}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(chi-squared with one degree of freedom) under 
+\begin_inset Formula $H_{0}$
+\end_inset
+
+, for sufficiently large 
+\begin_inset Formula $b$
+\end_inset
+
+ and 
+\begin_inset Formula $c$
+\end_inset
+
+ (heuristically, at least 10 for each).
+\end_layout
+
+\begin_layout Standard
+McNemar's test is paired, enabling us to effectively make comparisons between
+ our models when they both face the same observations in the test dataset.
+ At the same time, it operates on counts of the data (our counts correct
+ and incorrect) and is non-parametric, without normality or other distributional
+ assumptions.
+ (Note: the test does still assume independence across observations, but
+ it is difficult to perform testing without this.)
 \end_layout
 
 \end_body

@@ -167,7 +167,7 @@
             0.4 \times (\frac{\text{Words}}{\text{Sentences}} + 100 \times \frac{\text{3+ Syllable Words}}{\text{Words}})
         \end{equation*}
         \item Word Count
-        \item Number of Questions - Count of question marks - Normalized by call length/word count
+        \item Normalized Number of Questions - Count of question marks, divided by call word count
         \item Tone - Following \cite{price_earnings_2012}, we use the Harvard dictionary to count words falling in various categories (Positive, Negative, Active, Passive, etc.). Then we construct tone using the first principal component of the matrix with each call as a row and each column as one of the following:
         \begin{equation*}
             \frac{\text{Positive}}{\text{Negative}}, \frac{\text{Active}}{\text{Passive}}, \frac{\text{Strong}}{\text{Weak}}, \frac{\text{Overstated}}{\text{Understated}}
@@ -211,9 +211,7 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
-
-    NOTE MCNEMAR?
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test on a contigency table of model counts correct and incorrect for this and all statistical tests in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
 
     \begin{table*}[h!]
         \centering
@@ -235,11 +233,7 @@
     \end{table*}
 
 
-    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. 
-    
-    %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
-
-    FOR ADDITIONAL HYPERPARAMETER DETAILS SEE...
+    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. This is in large part due to our use of balanced class weighting to handle rare classes. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:logistic-most-complex-model-additional-details}). 
     
     The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
@@ -256,9 +250,7 @@
         \label{tab:xgboost-model-comparison}
     \end{table*}
 
-    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance.
-
-    % Discuss grid search
+    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance. In general, our hyperparameters, described in detail in Appendix Section \ref{sec:xgboost-most-complex-model-additional-details}, seem to have sufficiently handled the frequent challenge posed by overfitting.
 
     \begin{table*}[h!]
         \centering
@@ -328,6 +320,8 @@
     Future work may want to incorporate metadata - days since call, dates and time series components, etc.
 
     Incorporate graph of weighted edges, experiment with different layers
+
+    Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy. We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization.
 
     \section*{Acknowledgements}
 
@@ -468,46 +462,96 @@
 
     \clearpage
     \newpage
+    \subsection{McNemar's Test}
+
+    \label{sec:mcnemars-test}
+
+    We make use of McNemar's Test to check for statistically significant differences between our models without NLP features (``Model 2'') and including NLP features (``Model 3'').
+
+    This test makes use of the following contingency table using counts over observations in our test dataset:
+
+    % \begin{figure}[h!]
+	% 	\centering
+    %     \caption{McNemar's Test Contingency Table}
+    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/McNemars Table.png}
+    %     %\label{fig:obs-by-quarter-year}
+	% \end{figure}
+
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|}
+            \hline 
+                & Model 3 Correct & Model 3 Incorrect & Row Total\tabularnewline
+            \hline 
+            \hline 
+            Model 2 Correct & $a$ & $b$ & $a+b$\tabularnewline
+            \hline 
+            Model 2 Incorrect & $c$ & $d$ & $c+d$\tabularnewline
+            \hline 
+            Column Total & $a+c$ & $b+d$ & $n$\tabularnewline
+            \hline 
+        \end{tabular}
+    \par\end{center}
+
+    Under the null hypothesis of identical performance, the marginal probabilities of each model being correct and incorrect are the same: 
+
+    \[
+    p_{a}+p_{b}=p_{a}+p_{c}
+    \]
+
+    \[
+    p_{c}+p_{d}=p_{b}+p_{d}
+    \]
+
+    which reduces to
+
+    \[
+    H_{0}:p_{b}=p_{c}
+    \]
+
+    \[
+    H_{1}:p_{b}\neq p_{c}
+    \]
+
+    The test statistic is
+
+    \[
+    \frac{(b-c)^{2}}{b+c}\sim\chi_{1}^{2}
+    \]
+
+    (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
+
+    McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
+
+    \clearpage
+    \newpage
     \subsection{Logistic Regression - Most Complex Model - Additional Details}
 
     \label{sec:logistic-most-complex-model-additional-details}
 
-    % Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
+    Table \ref{tab:logistic-most-complex-best-params} shows the optimal hyperparameters we were able to find via grid search for our logistic regression model incorporating all of the financial and NLP features. Our use of balanced class weighting enables the model to perform fairly well, even for rare classes. We are able to handle our high-dimensional data with hundreds of variables effectively by using an L1 penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C). A one versus rest multiclass prediction setup is used, where a binary is/is not logistic regression probability is estimated for each class, and the class with the highest score is taken.
 
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Best Hyperparameters - Most Complex Model}
-    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
-    %     \label{tab:most-complex-best-params}
-    % \end{table*}
-
-    % \begin{figure}[h!]
-	% 	\centering
-    %     \caption{Confusion Matrix - Most Complex Model}
-    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
-    %     \label{fig:most-complex-confusion-matrix}
-	% \end{figure}
+    \begin{table*}[h!]
+        \centering
+        \caption{Best Hyperparameters - Most Complex Logistic Regression Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
+        \label{tab:logistic-most-complex-best-params}
+    \end{table*}
 
     \clearpage
     \newpage
 
     \subsection{XGBoost - Most Complex Model - Additional Details}
 
-    % Table \ref{tab:most-complex-best-params} and Figure \ref{fig:most-complex-confusion-matrix} show the high level of accuracy we are able to attain even for sparse classes when including all available features with an L1 penalty (elastic net with fully L1), balanced class weighting, and a simple one versus rest multiclass prediction setup (a binary is/is not logistic regression probability is estimated for each class, and class with the highest score is taken).
+    \label{sec:xgboost-most-complex-model-additional-details}
 
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Best Hyperparameters - Most Complex Model}
-    %     \input{../Output/Modelling/Logistic Regression/Tables/Most_Complex_Model_Best_Params.tex}
-    %     \label{tab:most-complex-best-params}
-    % \end{table*}
+    Table \ref{tab:xgboost-most-complex-best-params} displays the optimal hyperparameters for our XGBoost model incorporating all financial and NLP features. To minimize risk of overfitting, we employed a gamma parameter to control the minimum loss reduction required to make further leaf nodes, in addition to limitations on maximum tree depth and the minimum weight needed to make a further split. We used a fairly high number of estimators to create our predictions.
 
-    % \begin{figure}[h!]
-	% 	\centering
-    %     \caption{Confusion Matrix - Most Complex Model}
-    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/Logistic Regression/rating_model_4/rating_model_4_confusion_matrix_no_title.png}
-    %     \label{fig:most-complex-confusion-matrix}
-	% \end{figure}
+    \begin{table*}[h!]
+        \centering
+        \caption{Best Hyperparameters - Most Complex XGBoost Model}
+        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
+        \label{tab:xgboost-most-complex-best-params}
+    \end{table*}
 
     \clearpage
     \newpage

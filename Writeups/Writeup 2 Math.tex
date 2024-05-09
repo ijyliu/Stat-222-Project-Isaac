@@ -3,8 +3,20 @@
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+\makeatother
+
 \usepackage{babel}
 \begin{document}
+
+\section*{Graph Convolutional Network}
+
 A GraphSage GCN is trained across a number of timesteps (here indexed by $r$) which progressively mix information from the embeddings of more and more distant neighbors. Creating these embeddings for a given timestep is a two-step process.
 
 First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. Using what is referred to as pool or pooling aggregation, for node $h$, with neighborhood $N(i)$, at timestep $r$,
@@ -24,4 +36,54 @@ h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
 Note that in our implementation the update step has no activation $\sigma$.
 
 The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
+
+\section*{McNemar's Test}
+
+We make use of McNemar's Test to check for statistically significant differences between our models without NLP features (``Model 2'') and including NLP features (``Model 3'').
+
+This test makes use of the following contingency table using counts over observations in our test dataset:
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+ & Model 3 Correct & Model 3 Incorrect & Row Total\tabularnewline
+\hline 
+\hline 
+Model 2 Correct & $a$ & $b$ & $a+b$\tabularnewline
+\hline 
+Model 2 Incorrect & $c$ & $d$ & $c+d$\tabularnewline
+\hline 
+Column Total & $a+c$ & $b+d$ & $n$\tabularnewline
+\hline 
+\end{tabular}
+\par\end{center}
+
+Under the null hypothesis of identical performance, the marginal probabilities of each model being correct and incorrect are the same: 
+
+\[
+p_{a}+p_{b}=p_{a}+p_{c}
+\]
+
+\[
+p_{c}+p_{d}=p_{b}+p_{d}
+\]
+
+which reduces to
+
+\[
+H_{0}:p_{b}=p_{c}
+\]
+
+\[
+H_{1}:p_{b}\neq p_{c}
+\]
+
+The test statistic is
+
+\[
+\frac{(b-c)^{2}}{b+c}\sim\chi_{1}^{2}
+\]
+
+(chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each).
+
+McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
 \end{document}
