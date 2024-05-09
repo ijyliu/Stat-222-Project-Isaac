@@ -27,6 +27,10 @@
   {Learning}.'' {\em INFORMS Journal on Data Science}, 2(2):~197--217.
   Publisher: INFORMS.
 
+\harvarditem[{Deep Graph Library}]{{Deep Graph
+  Library}}{2024}{deep_graph_library_deep_2024}
+{\bf {Deep Graph Library}.} 2024. ``Deep {Graph} {Library}.''
+
 \harvarditem[Donovan et~al.]{John Donovan, Jared Jennings, Kevin Koharki
   \harvardand\ Joshua Lee}{2021}{donovan_measuring_2021}
 {\bf Donovan, John, Jared Jennings, Kevin Koharki, and Joshua Lee.} 2021.
@@ -45,6 +49,12 @@
 \harvarditem[Gunning]{Robert Gunning}{1952}{gunning_technique_1952}
 {\bf Gunning, Robert.} 1952. {\em The {Technique} of {Clear} {Writing}.}
   McGraw-Hill. Google-Books-ID: ofI0AAAAMAAJ.
+
+\harvarditem[Hamilton, Ying \harvardand\ Leskovec]{William~L. Hamilton, Rex
+  Ying \harvardand\ Jure Leskovec}{2018}{hamilton_inductive_2018}
+{\bf Hamilton, William~L., Rex Ying, and Jure Leskovec.} 2018. ``Inductive
+  {Representation} {Learning} on {Large} {Graphs}.'' arXiv:1706.02216 [cs,
+  stat].
 
 \harvarditem[He]{Guanming He}{2018}{he_impact_2018}
 {\bf He, Guanming.} 2018. ``The {Impact} of {Impending} {Credit} {Rating}

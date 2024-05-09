@@ -1,0 +1,27 @@
+%% LyX 2.3.6.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+\begin{document}
+A GraphSage GCN is trained across a number of timesteps (here indexed by $r$) which progressively mix information from the embeddings of more and more distant neighbors. Creating these embeddings for a given timestep is a two-step process.
+
+First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. Using what is referred to as pool or pooling aggregation, for node $h$, with neighborhood $N(i)$, at timestep $r$,
+
+\[
+h_{N(i)}^{(r)}=max[(\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
+\]
+
+meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
+
+Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation to get a fully updated node representation.
+
+\[
+h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
+\]
+
+Note that in our implementation the update step has no activation $\sigma$.
+
+The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
+\end{document}

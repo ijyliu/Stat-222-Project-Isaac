@@ -199,22 +199,8 @@
 
     \subsection*{Logistic Regression}
 
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Logistic Regression Model Comparison}
-    %     \begin{minipage}[c]{0.45\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_model_comparison_df_smaller.tex}
-    %         \caption*{\footnotesize Exclude Previous Rating} 
-    %     \end{minipage}
-    %     \begin{minipage}[c]{0.45\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/Logistic Regression/Tables/include_previous_model_comparison_df_smaller.tex}
-    %         \caption*{\footnotesize Include Previous Rating} 
-    %     \end{minipage}
-    %     \label{tab:logistic-regression-model-comparison}
-    % \end{table*}
-
+    Table \ref{tab:logistic-regression-model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings. For these models, we do not include the rating on the previous fixed quarter date (for those results, see Appendix Section \ref{sec:include-previous-rating}). For predicting changes in rating, see Appendix Section \ref{sec:change-prediction}.
+    
     \begin{table*}[h!]
         \centering
         \caption{Logistic Regression Model Comparison}
@@ -222,15 +208,13 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Table \ref{tab:logistic-regression-model-comparison} shows prediction statistics for our initial set of classifiers - simple and interpretable logistic regression models aiming to predict ratings. For these models, we do not include the rating on the previous fixed quarter date (for those results, see Appendix Section \ref{sec:include-previous-rating}). For predicting changes in rating, see Appendix Section \ref{sec:change-prediction}.
-    
     Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by adding financial variables (for a list, see items marked as Variable Type XXX in Table \ref{tab:numeric_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant. These models including financial variables very frequently bring the predicted rating 1 rating or less away from the actual.
 
     NOTE MCNEMAR?
 
-    The left side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
+    The left side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows that our most complex model generally performs well across all classes, with only a few problems when predicting minority classes. %This is in large part due to our use of balanced class weighting to handle rare classes. We performed grid search 5-fold cross validation to inform our use of these weights. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data (for details, see Appendix Section \ref{sec:most-complex-model-additional-details}). 
     
-    The right side of Table \ref{tab:most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
+    The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
     RANK NLP FEATURES?
 
@@ -252,43 +236,11 @@
         \label{tab:logistic-most-complex-classification-report-and-permutation-importance}
     \end{table*}
 
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Most Complex Logistic Regression Model - Permutation Importance}
-    %     \begin{minipage}[c]{0.49\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-    %         \caption*{\footnotesize Exclude Previous Rating} 
-    %     \end{minipage}
-    %     \begin{minipage}[c]{0.49\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-    %         \caption*{\footnotesize Include Previous Rating} 
-    %     \end{minipage}
-    %     \label{tab:logistic-most-complex-permutation-importance}
-    % \end{table*}
-
     We are also able to inspect the coefficients of our logistic regression model to see if their direction aligns with our intuition concerning the impact of individual features.
 
     \subsubsection*{XGBoost}
 
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{XGBoost Model Comparison}
-    %     \begin{minipage}[c]{0.45\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/XGBoost/Tables/exclude_previous_model_comparison_df_smaller.tex}
-    %         \caption*{\footnotesize Exclude Previous Rating} 
-    %         %\label{tab:most-complex-permutation-importance}
-    %     \end{minipage}
-    %     \begin{minipage}[c]{0.45\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/XGBoost/Tables/include_previous_model_comparison_df_smaller.tex}
-    %         \caption*{\footnotesize Include Previous Rating} 
-    %         %\label{tab:most-complex-classification-report}
-    %     \end{minipage}
-    %     \label{tab:xgboost-model-comparison}
-    % \end{table*}
+    In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
 
     \begin{table*}[h!]
         \centering
@@ -297,25 +249,7 @@
         \label{tab:xgboost-model-comparison}
     \end{table*}
 
-    In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
-
-    % \begin{table*}[h!]
-    %     \centering
-    %     \caption{Most Complex XGBoost Model - Permutation Importance}
-    %     \begin{minipage}[c]{0.49\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-    %         \caption*{\footnotesize Exclude Previous Rating} 
-    %     \end{minipage}
-    %     \begin{minipage}[c]{0.49\linewidth}
-    %         \centering
-    %         \input{../Output/Modelling/XGBoost/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
-    %         \caption*{\footnotesize Include Previous Rating} 
-    %     \end{minipage}
-    %     \label{tab:xgboost-most-complex-permutation-importance}
-    % \end{table*}
-
-    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, appears to greatly improve performance.
+    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance.
 
     % Discuss grid search
 
@@ -338,6 +272,42 @@
     \end{table*}
 
     \subsubsection*{Graph Neural Network}
+
+    We make use of the network of company mentions within earnings calls to train an end-to-end graph neural network for classification. Graph Neural Networks construct powerful representations of nodes/entities in a network of relationships by using message passing to aggregate features from neighboring nodes. In this work, we use a GraphSAGE \citep{hamilton_inductive_2018} Graph Convolutional Network (GCN) implemented via the Deep Graph Library. \citep{deep_graph_library_deep_2024}
+
+    % begin lyx insertion
+
+    A GraphSage GCN is trained across a number of timesteps (here indexed by $r$) which progressively mix information from the embeddings of more and more distant neighbors. Creating these embeddings for a given timestep is a two-step process.
+
+    First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. Using what is referred to as pool or pooling aggregation, for node $h$, with neighborhood $N(i)$, at timestep $r$,
+
+    \[
+    h_{N(i)}^{(r)}=max[(\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
+    \]
+
+    meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
+
+    Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation to get a fully updated node representation.
+
+    \[
+    h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
+    \]
+
+    Note that in our implementation the update step has no activation $\sigma$.
+
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
+
+    % end lyx insertion
+
+    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call.
+
+    Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited.
+
+    GRAPH NN EDA
+
+    TRANSDUCTIVE VERSUS INDUCTIVE
+
+    CONTRAST with Das et al \cite{das_credit_2023} and note usage of mentions and not cosine similarities
 
     \section*{Conclusion}
 
