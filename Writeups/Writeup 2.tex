@@ -63,6 +63,8 @@
 
 \input{../Output/All Data EDA/Tabular EDA/share_of_ratings_same_as_previous_fixed_quarter_date.tex}
 
+\input{../Output/Modelling/XGBoost/exclude_previous_rating_model_3/permutation_importance_nlp_ranks.tex}
+
 \begin{document}
 
 	\maketitle
@@ -237,11 +239,9 @@
     
     The right side of Table \ref{tab:logistic-most-complex-classification-report-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
-    RANK NLP FEATURES?
-
     \subsubsection*{XGBoost}
 
-    In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
+    In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. FinBERT positivity, the negative and understated components of tone, and Numeric Transparency contribute substantially at ranks \rPosScoreFinbert, \rNeg, and \rUndrst \space respectively - word count and readability far less so, at ranks \rWordCount \space and \rGfScore. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
 
     \begin{table*}[h!]
         \centering
@@ -250,7 +250,7 @@
         \label{tab:xgboost-model-comparison}
     \end{table*}
 
-    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate. Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance. In general, our hyperparameters, described in detail in Appendix Section \ref{sec:xgboost-most-complex-model-additional-details}, seem to have sufficiently handled the frequent challenge posed by overfitting.
+    Table \ref{tab:xgboost-most-complex-classification-report-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Financial features appear to be the most important individual variables, though NLP features do also perform well in aggregate (at rank ). Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance. In general, our hyperparameters, described in detail in Appendix Section \ref{sec:xgboost-most-complex-model-additional-details}, seem to have sufficiently handled the frequent challenge posed by overfitting.
 
     \begin{table*}[h!]
         \centering
@@ -470,13 +470,6 @@
 
     This test makes use of the following contingency table using counts over observations in our test dataset:
 
-    % \begin{figure}[h!]
-	% 	\centering
-    %     \caption{McNemar's Test Contingency Table}
-    %     \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/Modelling/McNemars Table.png}
-    %     %\label{fig:obs-by-quarter-year}
-	% \end{figure}
-
     \begin{center}
         \begin{tabular}{|c|c|c|c|}
             \hline 
@@ -582,7 +575,7 @@
 
     \begin{table*}[h!]
         \centering
-        \caption{Permutation Importance Including Previous Rating}
+        \caption{Permutation Importance Including Previous Rating - Most Complex Model}
         \begin{minipage}[c]{0.495\linewidth}
             \centering
             \input{../Output/Modelling/Logistic Regression/Tables/include_previous_Most_Complex_Model_Permutation_Importance_Top_15.tex}
@@ -605,7 +598,7 @@
 
     \label{sec:change-prediction}
 
-    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income are already quarterly changes in a company's financial position).
+    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income are already quarterly changes in a company's financial position).
 
     Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
 
@@ -628,17 +621,17 @@
     \end{table*}
 
     \begin{figure*}[h!]
-        \caption{Most Complex Model - Rating Changes Confusion Matrices}
+        \caption{Rating Changes Confusion Matrices - Most Complex Model}
         \begin{subfigure}[h]{0.4925\textwidth}
             \centering
-            \subcaption{Logistic Regression}
             \includegraphics[width=0.95\hsize]{../Output/Modelling/Logistic Regression/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+            \subcaption*{Logistic Regression}
         \end{subfigure}
         %\hfill
         \begin{subfigure}[h]{0.4925\textwidth}
             \centering
-            \subcaption{XGBoost}
             \includegraphics[width=0.95\hsize]{../Output/Modelling/XGBoost/smote_rating_change_model_3/smote_rating_change_model_3_confusion_matrix_no_title.png}
+            \subcaption*{XGBoost}
         \end{subfigure}
         \hfill
         \label{fig:change-confusion-matrix}
