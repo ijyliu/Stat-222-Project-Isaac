@@ -81,13 +81,11 @@
 
     We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached. An example of many of the variables for a company by fixed quarter date can be found in Appendix Section \ref{sec:one-obs-final-data}.
 
-    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. To ensure comparability, we drop items missing any predictor variable, as well as some companies with only a few (3 or less) quarters. We identified one bankruptcy in our data - Peabody Energy on April 13, 2016 - and on further investigation, removed some quarters with incorrect ratings. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. Details of our data cleaning and filtering steps can be found in Appendix Section \ref{sec:data-cleaning}. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
     We make use of long-term credit rating issuances from S and P Rating Services, provided from a combination of two credit rating datasets downloaded in CSV and Excel format from Kaggle \citep{gewerc_corporate_2020,makwana_corporate_2022}. Each issuance can be a change in rating (upgrade, downgrade) or reaffirmation - they occur at ad-hoc intervals. We reshape these rating issuances to a dataset of ratings for each company on each fixed quarter date by creating a rating end date variable that is the date of the next issuance or end of data, and joining a list of the fixed quarter dates on the condition that the fixed quarter date is between the issuance date and the end date.
-
-    POTENTIALLY MOVE ALL DATA CLEANING STEPS TO APPENDIX.
 
     Figure \ref{fig:credit-ratings} shows the distribution of rating grades used in our final dataset. Finer grades (AA+, CCC-, etc.) are sometimes assigned by agencies, but these grades were converted by dropping the +/- for this project. Ratings of BBB and above are considered investment grade - these bonds carry empirical one-year default rates of 0 to 1\%. Ratings below that are classified as junk, with default rates from 1 to 30, 40, or even 50\% for some years \citep{s_and_p_global_ratings_s_2024}. Most company-quarters have ratings around the BBB threshold, with very few cases on the extreme ends of the spectrum. Ratings also tend to be constant over time. Relative to the previous fixed quarter date, \shareNotChanges \space of ratings remain the same. Rating on the previous fixed quarter date can thus be an extremely strong predictor.
 
@@ -110,13 +108,11 @@
 
     \subsection*{Earnings Calls}
 
-    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modeling_prep_financial_2024}, a trusted source widely used in industry. We remove all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from, as well as calls for companies that provide them on an annual, rather than quarterly basis. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
+    Our earnings call data comes from the Financial Modelling Prep API \citep{financial_modeling_prep_financial_2024}, a trusted source widely used in industry. Including both prepared remarks and analyst Q and A sessions, the overall average call length in our final data stands at \avgCallLength \space words.
 
     \subsection*{Financial Statements}
 
-    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios and levels of variables. (for a list, see variables in Table \ref{tab:financial_summary_statistics})
-    
-    To prepare the data, we limit our observations to items reported in USD, check for and correct values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits are 000.00 and the item is above or below the 2.5\% and 97.5\% quantile, we divide by 1,000.} and check some accounting identities in \cite{das_credit_2023},\footnote{We check total liabilities are greated than current liabilities, total assets are greater than total current assets, and net sales (revenue) is greated than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discard observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios and levels of variables (for a list, see variables in Table \ref{tab:financial_summary_statistics}).
 
     \begin{figure*}
         \caption{Altman Z-Score}
@@ -139,7 +135,7 @@
       
     \subsection*{Sector}
 
-    The GCIS industry classification standard divides companies into 11 major industry sectors \citep{s_and_p_gics_2024}.\footnote{There are finer groupings as well, but this data was not easily obtainable for our project.} It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format \citep{kozlov_us_2022} and supplemented them with manual lookup. Figure \ref{fig:firms-by-sector} shows the sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors. However, when we quantize ratings and compute average values by sector, we do not see large differences, suggesting our results still may provide some generalizability. Though it is not yet clear that sector provides enough useful variation in rating to be a useful predictor, we still include it in our models, particularly as it may improve models including interactions (such as tree-based methods).
+    The GCIS industry classification standard divides companies into 11 major industry sectors \citep{s_and_p_gics_2024}.\footnote{There are finer groupings as well, but this data was not easily obtainable for our project.} It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format \citep{kozlov_us_2022} and supplemented them with manual lookup. Figure \ref{fig:firms-by-sector} shows the sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors. However, when we quantify ratings and compute average values by sector, we do not see large differences, suggesting our results still may provide some generalizability. Though it is not yet clear that sector provides enough useful variation in rating to be a useful predictor, we still include it in our models, particularly as it may improve models including interactions (such as tree-based methods).
 
     \begin{figure*}
         \caption{Sector}
@@ -177,9 +173,7 @@
         \item FinBERT Positivity Score - \footnote{We originally considered directly incorporating FinBERT embeddings into our models, or creating an end-to-end classifier making use of a BERT model. Our calls, however, are too long for readily available transformer embeddings or models to efficiently and effectively represent.}
     \end{itemize}
 
-    Examples for readability and tone can be found in Appendix Section \ref{sec:nlp-examples}. We removed observations with outliers for any NLP feature, produced, for example, as a result of zeroes or low values in denominators.
-    
-    The distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary. It appears to be the case that higher quality companies tend to have longer calls. Though somewhat noisy, our FinBERT positivity score does seem to correlate with higher ratings.
+    Examples for readability and tone can be found in Appendix Section \ref{sec:nlp-examples}, and the distribution of each NLP feature by rating is shown in Figure \ref{fig:dist-nlp-by-rating} below. Lower quality companies seem to provide more numbers with less commentary. It appears to be the case that higher quality companies tend to have longer calls. Though somewhat noisy, our FinBERT positivity score does seem to correlate with higher ratings.
 
     \begin{figure}[h!]
 		\centering
@@ -378,6 +372,19 @@
         \includegraphics[width=0.6\linewidth,keepaspectratio=true]{../Output/All Data EDA/Tabular EDA/all_data_fixed_quarter_dates_obs_by_year_quarter_no_title.png}
         \label{fig:obs-by-quarter-year}
 	\end{figure}
+
+    \clearpage
+    \newpage
+
+    \subsection{Data Cleaning Steps}
+
+    \label{sec:data-cleaning}
+
+    To ensure comparability, we dropped items missing any predictor variable, as well as some companies with only a few (3 or less) quarters. We identified one bankruptcy in our data - Peabody Energy on April 13, 2016 - and on further investigation, deleted some quarters with incorrect ratings. We removed all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from, as well as calls for companies that provide them on an annual, rather than quarterly basis.
+
+    For our financial data, we limited our observations to items reported in USD, checked for and corrected values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits are 000.00 and the item is above or below the 2.5\% and 97.5\% quantile, we divide by 1,000.} and checked some accounting identities in \cite{das_credit_2023},\footnote{We checked total liabilities are greated than current liabilities, total assets are greater than total current assets, and net sales (revenue) is greated than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discarded observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
+
+    We removed observations with outliers for any NLP feature, produced, for example, as a result of zeroes or low values in denominators.
 
     \clearpage
     \newpage
