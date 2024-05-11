@@ -1,5 +1,5 @@
-# Inductive Graph Neural Network Functions
-# Functions for training, testing, evaluating, and saving inductive graph neural network models
+# Graph Neural Network Functions
+# Functions for training, testing, evaluating, and saving graph neural network models
 
 # Packages
 import os
@@ -63,45 +63,6 @@ class NodeClassification(nn.Module):
     def forward(self, graph, features, labels, train_mask):
         logits = self.gconv_model(graph, features) # logits from the graph convolutional model
         return self.loss_fcn(logits[train_mask], labels[train_mask]) # return loss
-
-def load_feature_and_class_data():
-    """
-    Load the feature and class data from the Parquet file.
-
-    Returns:
-    A DataFrame containing the data.
-    """
-    # Read the Parquet file into a DataFrame
-    # list of files in '../../../../Data/All_Data/All_Data_with_NLP_Features'
-    file_list = [f for f in os.listdir(r'../../../Data/All_Data/All_Data_with_NLP_Features') if f.endswith('.parquet')]
-    # read in all parquet files
-    df = pd.concat([pd.read_parquet(r'../../../Data/All_Data/All_Data_with_NLP_Features/' + f) for f in file_list])
-    # Sort by ticker and fixed_quarter_date
-    df = df.sort_values(['ticker', 'fixed_quarter_date']).reset_index(drop=True)
-    # Create node as ticker + ' : ' + fixed_quarter_date
-    df['node'] = df['ticker'] + ' : ' + df['fixed_quarter_date'].astype(str)
-    return df
-
-def load_src_dst_data():
-    '''
-    Load the source and destination data from the company mentions file.
-
-    Returns:
-    A DataFrame containing unique source and destionation pairs/edges.
-    '''
-
-    # Company mentions file
-    company_mentions_with_ticker = pd.read_excel('../../../Data/Company_Mentions/Company_Mentions_With_Ticker.xlsx')
-
-    # Get tickers and counts
-    pairwise_df = (company_mentions_with_ticker[['ticker', 'matched_ticker', 'fixed_quarter_date']]
-                                               .drop_duplicates()
-                                               .rename(columns={'ticker': 'src_ticker', 'matched_ticker': 'dst_ticker'}))
-
-    # Note: don't need to do anything to handle symmetry (don't need to drop half of the pairs)
-
-    # Return the DataFrame
-    return pairwise_df
 
 def get_column_names_and_mapping(unsanitized_model_name):
     '''
@@ -261,7 +222,7 @@ def evaluate_on_train_and_val(model, graph, features, labels, train_mask, valid_
         # Return accuracy on training and validation datasets
         return accuracy_score(train_y_true, train_y_pred), f1_score(train_y_true, train_y_pred, average='weighted'), accuracy_score(validation_y_true, validation_y_pred), f1_score(validation_y_true, validation_y_pred, average='weighted')
     
-def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, val_mask, test_mask, n_epochs):
+def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, val_mask, test_mask, n_epochs, inductive):
     '''
     Train the graph neural network and get predictions for the test dataset.
 
@@ -275,6 +236,7 @@ def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, va
     - val_mask: Mask for validation data
     - test_mask: Mask for test data
     - n_epochs: Number of epochs to run training
+    - inductive: Boolean indicating whether the model is inductive
 
     Returns:
     - model: Trained model
@@ -284,15 +246,15 @@ def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, va
     
     # Get full graph
     full_graph, full_features, full_labels = graph, features, labels
-
-    # Inductive model
-    # Limit graph to nodes in training or validation dataset
-    inductive_subgraph = graph.subgraph(torch.nonzero(torch.logical_or(train_mask, val_mask)).flatten())
-    # Update features, labels, and masks for this subgraph
-    inductive_features = features[inductive_subgraph.ndata[dgl.NID]]
-    inductive_labels = labels[inductive_subgraph.ndata[dgl.NID]]
-    train_mask = train_mask[inductive_subgraph.ndata[dgl.NID]]
-    val_mask = val_mask[inductive_subgraph.ndata[dgl.NID]]
+    # Inductive model       
+    if inductive:
+        # Limit graph to nodes in training or validation dataset
+        graph = graph.subgraph(torch.nonzero(torch.logical_or(train_mask, val_mask)).flatten())
+        # Update features, labels, and masks to be for this subgraph
+        features = features[graph.ndata[dgl.NID]]
+        labels = labels[graph.ndata[dgl.NID]]
+        train_mask = train_mask[graph.ndata[dgl.NID]]
+        val_mask = val_mask[graph.ndata[dgl.NID]]
     
     # Keep track of time for each epoch
     duration = []
@@ -306,14 +268,14 @@ def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, va
         model.train()
 
         # Forward pass and loss computation - no gradient computation
-        loss = model(inductive_subgraph, inductive_features, inductive_labels, train_mask)
+        loss = model(graph, features, labels, train_mask)
         optimizer.zero_grad()
         # Backward pass - backpropagation, use optimizer to update values
         loss.backward()
         optimizer.step()
         
         # Evaluate model on training and validation datasets
-        train_acc, train_f1, valid_acc, valid_f1 = evaluate_on_train_and_val(model, inductive_subgraph, inductive_features, inductive_labels, train_mask, val_mask)
+        train_acc, train_f1, valid_acc, valid_f1 = evaluate_on_train_and_val(model, graph, features, labels, train_mask, val_mask)
         
         # Record time taken for epoch
         duration.append(time.time() - tic)
@@ -329,6 +291,7 @@ def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, va
     model.eval()
     with torch.no_grad():
         # Compute logits
+        # Always use full graph
         logits = model.gconv_model(full_graph, full_features)
         # Test dataset prediction
         y_true, y_pred = get_predictions(logits, test_mask, full_labels)
@@ -336,23 +299,24 @@ def train_and_get_pred(model, optimizer, graph, features, labels, train_mask, va
     # Return model, true labels, and predicted labels
     return model, y_true, y_pred
 
-def run_inductive_model(train_and_val_df,
-                          test_df,
-                          src_dst_df,
-                          model_dir,
-                          prediction_file_path,
-                          target_column,
-                          custom_mapping,
-                          node_to_int,
-                          n_hidden = 32,
-                          n_layers = 2,
-                          dropout = 0.0,
-                          weight_decay = 5e-4,
-                          n_epochs = 100,
-                          lr = 0.01,
-                          aggregator_type = "pool"):
+def run_model(train_and_val_df,
+              test_df,
+              src_dst_df,
+              model_dir,
+              prediction_file_path,
+              target_column,
+              custom_mapping,
+              node_to_int,
+              n_hidden = 32,
+              n_layers = 2,
+              dropout = 0.0,
+              weight_decay = 5e-4,
+              n_epochs = 100,
+              lr = 0.01,
+              aggregator_type = "pool",
+              inductive = False):
     '''
-    Run (train and evaluate) an inductive graph neural network model.
+    Run (train and evaluate) a graph neural network model.
 
     Parameters:
     - train_and_val_df: DataFrame containing training and validation data
@@ -370,6 +334,7 @@ def run_inductive_model(train_and_val_df,
     - n_epochs: Number of epochs
     - lr: Learning rate
     - aggregator_type: Aggregator type
+    - inductive: Boolean indicating whether the model is inductive
     '''
 
     # Create model_dir if it doesn't exist
@@ -457,7 +422,7 @@ def run_inductive_model(train_and_val_df,
 
     # Train and get predictions
     print("Starting Model training and prediction")
-    model, y_true, y_pred = train_and_get_pred(model, optimizer, graph, features, labels, train_mask, val_mask, test_mask, n_epochs)
+    model, y_true, y_pred = train_and_get_pred(model, optimizer, graph, features, labels, train_mask, val_mask, test_mask, n_epochs, inductive)
     print("Finished Model training and prediction")
 
     # Print accuracy, f1, majority class baseline accuracy
@@ -477,6 +442,8 @@ def run_inductive_model(train_and_val_df,
     # Decode target, pred, and node
     predictions_df['target'] = predictions_df['target'].replace({v: k for k, v in custom_mapping.items()})
     predictions_df['pred'] = predictions_df['pred'].replace({v: k for k, v in custom_mapping.items()})
+    print(predictions_df['node'])
+    print(node_to_int)
     predictions_df['node'] = predictions_df['node'].replace({v: k for k, v in node_to_int.items()})
     # Output to Excel
     predictions_df.to_excel(prediction_file_path, index=False)
