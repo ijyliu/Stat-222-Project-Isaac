@@ -503,6 +503,16 @@ The test statistic is
 \end_layout
 
 \begin_layout Standard
+There are modifications of the test to handle small values of 
+\begin_inset Formula $b+c$
+\end_inset
+
+ to make it exact with a binomial distribution, as well as methods to perform
+ continuity correction, but for our purposes these versions produced the
+ same conclusions regarding significance at 5%.
+\end_layout
+
+\begin_layout Standard
 McNemar's test is paired, enabling us to effectively make comparisons between
  our models when they both face the same observations in the test dataset.
  At the same time, it operates on counts of the data (our counts correct

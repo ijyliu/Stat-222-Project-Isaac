@@ -309,7 +309,7 @@ Model 2 Correct
 \begin_inset Text
 
 \begin_layout Plain Layout
-Model 2 Inorrect
+Model 2 Incorrect
 \end_layout
 
 \end_inset
@@ -500,6 +500,16 @@ The test statistic is
 \end_inset
 
  (heuristically, at least 10 for each).
+\end_layout
+
+\begin_layout Standard
+There are modifications of the test to handle small values of 
+\begin_inset Formula $b+c$
+\end_inset
+
+ to make it exact with a binomial distribution, as well as methods to perform
+ continuity correction, but for our purposes these versions produced the
+ same conclusions regarding significant/not significant at 5%.
 \end_layout
 
 \begin_layout Standard

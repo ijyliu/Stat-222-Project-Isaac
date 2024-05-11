@@ -67,7 +67,7 @@
 
 \input{../Output/Modelling/Graph Neural Network/learnable_net_stats.tex}
 
-\input{../Output/Modelling/Graph Neural Network/xgboost_on_gnn_data.tex}
+\input{../Output/Modelling/Graph Neural Network/other_classifiers_on_gnn_data.tex}
 
 \begin{document}
 
@@ -289,13 +289,13 @@
     h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
     \]
 
-    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 150 epochs at a learning rate of 0.01.
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output with dimension of the number of classes, for each node, while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 150 epochs at a learning rate of 0.01, using a class stratified 80-20 train-val split and selecting the model state from the epoch with the highest validation accuracy.
 
     % end lyx insertion
 
-    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call. Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited. When we include only nodes/calls that are connected to others, and nodes in the training dataset belonging to rating classes with more than one value, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) and \numEdges \space edges between calls. The average degree of the network (distinct other companies mentioned or mentioning) is \averageDegree.
+    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call. Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited. When we include only nodes/calls that are connected to others, and nodes for rating classes with more than one value in training data, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) and \numEdges \space edges between calls. The average degree of the network (distinct other companies mentioned or mentioning) is \averageDegree.
 
-    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node (or new call) for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}.
+    For reference, we also constructed comparisons with our other classifiers including financial and NLP features on the graph neural network's dataset. Logistic regression and XGBoost achieved an accuracies of \pretrainedLRAccuracy \space and \pretrainedXGBAccuracy \space on the graph neural network's test set. A possibly fairer comparison are the accuracies we achieved on this set after fully retraining the classifier (with the same hyperparameters) on the graph neural network's training set, which were \retrainLRAccuracy \space and \retrainXGBAccuracy.
 
     \begin{table*}[h!]
         \centering
@@ -311,7 +311,7 @@
         \label{tab:transductive-model-comparison-and-confusion-matrix}
     \end{table*}
 
-    In the inductive setting, introduced in \citep{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}.
+    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node (or new call) for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}. Our performance is largely indistinguishable from logistic regression (inferior to XGBoost), and similar to the logistic case, the NLP features do not contribute.
 
     \begin{table*}[h!]
         \centering
@@ -327,19 +327,16 @@
         \label{tab:inductive-model-comparison-and-confusion-matrix}
     \end{table*}
 
-    For reference, we also constructed comparisons with our best XGBoost classifier using our most complex specification with financial and NLP features on the graph neural network's dataset. Our classifier in the section above achieved an accuracy of \pretrainedAccuracy \space on the graph neural network's test set. A possibly fairer comparison is the accuracy we achieved on this set after fully retraining the classifier (with the same hyperparameters) on the graph neural network's training set, which was \retrainAccuracy.
+
+    In the inductive setting, introduced in \citep{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}, and are similar to the transductive case.
 
     \section*{Conclusion}
 
-    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features.
+    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features. Our experimental graph neural network based on mentions in company calls behaved similarly to logistic regression. We have a moderate degree of evidence that NLP features are important within our specific setup.
 
-    DISCUSS GRAPH NN RESULTS
+    There remains substantial opportunity for future improvements to this project. We would have liked to incorporate more metadata for our calls into predictions, leveraging date and time series components. Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy. We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization. Finally, there are other potential modifications to our network of firms and graph neural network, such as experimenting with the use of Doc2Vec embeddings and cosine similarities for network construction on our data, which seem to work well for prior work. We might also incorporate weighted edges for the number of actual mentions, and experiment with more model architectures. Nevertheless, it seems likely that mastery of credit rating prediction (especially including rich representations of text from earnings calls) is within reach, as demonstrated by our models.
 
-    Future work may want to incorporate metadata - days since call, dates and time series components, etc.
-
-    Incorporate graph of weighted edges, experiment with different layers
-
-    Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy. We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization.
+    Possibly using links from the network of firms on the network of calls
 
     \section*{Acknowledgements}
 
@@ -501,19 +498,19 @@
 
     \label{sec:mcnemars-test}
 
-    We make use of McNemar's Test to check for statistically significant differences between our models without NLP features (``Model 2'') and including NLP features (``Model 3'').
+    We make use of McNemar's Test to check for statistically significant differences between our models (usually those without NLP features and including NLP features).
 
     This test makes use of the following contingency table using counts over observations in our test dataset:
 
     \begin{center}
         \begin{tabular}{|c|c|c|c|}
             \hline 
-                & Model 3 Correct & Model 3 Incorrect & Row Total\tabularnewline
+                & Model B Correct & Model B Incorrect & Row Total\tabularnewline
             \hline 
             \hline 
-            Model 2 Correct & $a$ & $b$ & $a+b$\tabularnewline
+            Model A Correct & $a$ & $b$ & $a+b$\tabularnewline
             \hline 
-            Model 2 Incorrect & $c$ & $d$ & $c+d$\tabularnewline
+            Model A Incorrect & $c$ & $d$ & $c+d$\tabularnewline
             \hline 
             Column Total & $a+c$ & $b+d$ & $n$\tabularnewline
             \hline 
@@ -547,6 +544,8 @@
     \]
 
     (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
+
+    There are modifications of the test to handle small values of $b+c$ to make it exact with a binomial distribution, as well as methods to perform continuity correction, but for our purposes these versions produced the same conclusions regarding significance at 5\%.
 
     McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
 
