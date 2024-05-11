@@ -283,19 +283,17 @@
 
     meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
 
-    Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation to get a fully updated node representation.
+    Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation (in our case, ReLU again) to get a fully updated node representation.
 
     \[
     h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
     \]
 
-    Note that in our implementation the update step has no activation $\sigma$.
-
-    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
 
     % end lyx insertion
 
-    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call. Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited. Only \noCallsWithNonSelfMentions \space calls (\shareCallsWithNonSelfMentions) have mentions of another company. On average, these calls mention \avgDistinctNonSelfCompaniesMentionedNoZero \space distinct other companies. When we include only nodes/calls that are connected to others, and nodes in the training dataset belonging to rating classes with more than one value, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) and \numEdges \space edges between calls. The average degree of the network is \averageDegree.
+    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call. Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited. When we include only nodes/calls that are connected to others, and nodes in the training dataset belonging to rating classes with more than one value, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) and \numEdges \space edges between calls. The average degree of the network (distinct other companies mentioned or mentioning) is \averageDegree.
 
     Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node (or new call) for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}.
 
