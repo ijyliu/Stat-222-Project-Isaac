@@ -289,7 +289,7 @@
     h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
     \]
 
-    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 32 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 5e-4 and train for 100 epochs at a learning rate of 0.01.
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output of size 9 (number of classes) for each node, while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 150 epochs at a learning rate of 0.01.
 
     % end lyx insertion
 
@@ -300,11 +300,11 @@
     \begin{table*}[h!]
         \centering
         \caption{Model Comparison and Confusion Matrix - Most Complex Transductive Graph Neural Network Model}
-        \begin{minipage}[c]{0.45\linewidth}
+        \begin{minipage}[c]{0.495\linewidth}
             \centering
             \input{../Output/Modelling/Graph Neural Network/Tables/Transductive_model_comparison_df.tex}
         \end{minipage}
-        \begin{minipage}[c]{0.45\linewidth}
+        \begin{minipage}[c]{0.495\linewidth}
             \centering
             \includegraphics[width=0.95\hsize]{../Output/Modelling/Graph Neural Network/Transductive/confusion_matrix_no_title.png}
         \end{minipage}
@@ -316,11 +316,11 @@
     \begin{table*}[h!]
         \centering
         \caption{Model Comparison and Confusion Matrix - Most Complex Inductive Graph Neural Network Model}
-        \begin{minipage}[c]{0.45\linewidth}
+        \begin{minipage}[c]{0.495\linewidth}
             \centering
             \input{../Output/Modelling/Graph Neural Network/Tables/Inductive_model_comparison_df.tex}
         \end{minipage}
-        \begin{minipage}[c]{0.45\linewidth}
+        \begin{minipage}[c]{0.495\linewidth}
             \centering
             \includegraphics[width=0.95\hsize]{../Output/Modelling/Graph Neural Network/Inductive/confusion_matrix_no_title.png}
         \end{minipage}
