@@ -526,9 +526,18 @@
 
     (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
 
-    There are modifications of the test to handle small values of $b+c$ to make it exact with a binomial distribution, as well as methods to perform continuity correction, but for our purposes these versions almost always produced the same conclusions regarding significance at 5\%.
+    There are modifications of the test to perform continuity correction, as well as to handle small values of $b+c$ by making it exact with a binomial distribution, but for our purposes these versions always produced the same conclusions regarding significance at 5\%.
 
     McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
+
+    The results of our tests are shown in Table \ref{tab:p-values} below. Items are dashed where there was no difference in accuracy.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{p-values for McNemar's Test}
+        \input{../Output/Modelling/p_values_table.tex}
+        \label{tab:p-values}
+    \end{table*}
 
     \clearpage
     \newpage
