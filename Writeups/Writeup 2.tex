@@ -69,6 +69,8 @@
 
 \input{../Output/Modelling/Graph Neural Network/other_classifiers_on_gnn_data.tex}
 
+\input{../Output/Modelling/Random Guess/random_guess.tex}
+
 \begin{document}
 
 	\maketitle
@@ -214,7 +216,7 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class.\footnote{The model also does not significantly outperform a random guess model based on the distribution or ratings in the training dataset, which achieved an accuracy of \ratingRGAcc.} Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
 
     \begin{table*}[h!]
         \centering
@@ -530,7 +532,7 @@
 
     McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
 
-    The results of our tests are shown in Table \ref{tab:p-values} below. Items are dashed where there was no difference in accuracy.
+    The results of our tests are shown in Table \ref{tab:p-values} below. Results are rounded to two decimal places. Items are dashed where there was no difference in accuracy.
 
     \begin{table*}[h!]
         \centering
@@ -642,7 +644,7 @@
 
     As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income, are already quarterly changes in a company's financial position).
 
-    Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
+    Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}).\footnote{A random guess model for rating changes received an accuracy of \changeRGAcc, better than most of our models, except for the two most complex XGBoost specifications.} We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
 
     \begin{table*}[h!]
         \centering
