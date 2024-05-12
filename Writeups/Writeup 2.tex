@@ -235,7 +235,7 @@
 
     The left side of Table \ref{tab:logistic-most-complex-confusion-matrix-and-permutation-importance} shows that our most complex model generally performs well across all classes (for details, see Appendix Section \ref{sec:logistic-most-complex-model-additional-details}). This is in large part due to our use of balanced class weighting to handle rare classes. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data. The right side of Table \ref{tab:logistic-most-complex-confusion-matrix-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
-    \subsubsection*{XGBoost}
+    \subsection*{XGBoost}
 
     In Table \ref{tab:xgboost-model-comparison}, we used the popular gradient boosting algorithm XGBoost to predict ratings, finding significant success. With the ability to model complex interactions between variables, we are able to attain substantially higher accuracy when including financial variables, and NLP features provide a statistically significant additional benefit. At around 90\% accuracy, our best model attains a level of performance slightly exceeding that in \cite{das_credit_2023}, with the substantially harder prediction task of predicting from among 10 different ratings (rather than a binary investment grade versus junk classification), and without the affordances of a graph neural network or more complex ensembling. Our model is near perfect in placing ratings within a very close neighborhood of their actual values.
 
@@ -267,39 +267,19 @@
         \label{tab:xgboost-most-complex-confusion-matrix-and-permutation-importance}
     \end{table*}
 
-    \subsubsection*{Graph Neural Network}
+    \subsection*{Graph Neural Network}
 
-    We make use of the network of company mentions within earnings calls to train an end-to-end graph neural network for classification. Aside from differing underlying data, and the use of earnings calls and not financial statements, this use of mentions to form the network differs from the use of document embedding cosine similarity cutoffs in \cite{das_credit_2023}. Graph Neural Networks construct powerful representations of nodes/entities in a network of relationships by using message passing to aggregate features from neighboring nodes. In this work, we use a GraphSAGE \citep{hamilton_inductive_2018} Graph Convolutional Network (GCN) implemented via the Deep Graph Library. \citep{deep_graph_library_deep_2024}
-
-    % begin lyx insertion
-
-    A GraphSage GCN is trained across a number of timesteps (here indexed by $r$) which progressively mix information from the embeddings of more and more distant neighbors. Creating these embeddings for a given timestep is a two-step process.
-
-    First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. Using what is referred to as pool or pooling aggregation, for node $h$, with neighborhood $N(i)$, at timestep $r$,
-
-    \[
-    h_{N(i)}^{(r)}=max[(\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
-    \]
-
-    meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
-
-    Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation (in our case, ReLU again) to get a fully updated node representation.
-
-    \[
-    h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
-    \]
-
-    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output with dimension of the number of classes, for each node, while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 150 epochs at a learning rate of 0.01, using a class stratified 80-20 train-val split and selecting the model state from the epoch with the highest validation accuracy.
+    We make use of the network of company mentions within earnings calls to train an end-to-end graph neural network for classification. Graph Neural Networks construct powerful representations of nodes/entities in a network of relationships by using message passing to aggregate features from neighboring nodes. In this work, we use a GraphSAGE \citep{hamilton_inductive_2018} Graph Convolutional Network (GCN) implemented via the Deep Graph Library. \citep{deep_graph_library_deep_2024} For details concerning our network architecture, see Appendix Section \ref{sec:gnn-architecture}.
 
     % end lyx insertion
 
-    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters when a mention occurs in either call. Because of the general sparsity of mentions, the size of this network and the size of our training and test datasets for this model is substantially limited. When we include only nodes/calls that are connected to others, and nodes for rating classes with more than one value in training data, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) and \numEdges \space edges between calls. The average degree of the network (distinct other companies mentioned or mentioning) is \averageDegree.
+    To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters based on the full firm to firm graph (which was aggregated across quarters) discussed earlier. Our network consists of subgraphs for each fixed quarter date. If two firms are ever connected via a mention, their nodes are always connected within each fixed quarter date. When we include only nodes that are connected to others, and nodes for rating classes with more than one value in the training data, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) falling into \gnnNumClasses \space rating classes, and \numEdges \space edges between these company-quarters. The average degree of the network is \averageDegree \space connections.
 
-    For reference, we also constructed comparisons with our other classifiers including financial and NLP features on the graph neural network's dataset. Logistic regression and XGBoost achieved an accuracies of \pretrainedLRAccuracy \space and \pretrainedXGBAccuracy \space on the graph neural network's test set. A possibly fairer comparison are the accuracies we achieved on this set after fully retraining the classifier (with the same hyperparameters) on the graph neural network's training set, which were \retrainLRAccuracy \space and \retrainXGBAccuracy.
+    For reference, we also constructed comparisons with our other classifiers including financial and NLP features on the graph neural network's dataset. Logistic regression and XGBoost achieved an accuracies of \pretrainedLRAccuracy \space and \pretrainedXGBAccuracy \space on the graph neural network's test set. A possibly fairer comparison are the accuracies we achieved on this set after fully retraining the classifiers (with the same hyperparameters as earlier) on the graph neural network's training set, which were \retrainLRAccuracy \space and \retrainXGBAccuracy.
 
     \begin{table*}[h!]
         \centering
-        \caption{Model Comparison and Confusion Matrix - Most Complex Transductive Graph Neural Network Model}
+        \caption{Transductive Graph Neural Network Model Comparison and Confusion Matrix for Most Complex Model}
         \begin{minipage}[c]{0.495\linewidth}
             \centering
             \input{../Output/Modelling/Graph Neural Network/Tables/Transductive_model_comparison_df.tex}
@@ -311,11 +291,11 @@
         \label{tab:transductive-model-comparison-and-confusion-matrix}
     \end{table*}
 
-    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node (or new call) for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}. Our performance is largely indistinguishable from logistic regression (inferior to XGBoost), and similar to the logistic case, the NLP features do not contribute.
+    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}. Our performance is slightly better than that of logistic regression (borderline statistically signficant at 5\%) but trails that of XGBoost,\footnote{It is sometimes stated that XGBoost and tree-based algorithms can outperform neural networks on heterogenous data - our diverse collection of variables from a variety of sources fall in line with such an explanation.} and similar to the logistic case, the NLP features do not clearly contribute.
 
     \begin{table*}[h!]
         \centering
-        \caption{Model Comparison and Confusion Matrix - Most Complex Inductive Graph Neural Network Model}
+        \caption{Inductive Graph Neural Network Model Comparison and Confusion Matrix for Most Complex Model}
         \begin{minipage}[c]{0.495\linewidth}
             \centering
             \input{../Output/Modelling/Graph Neural Network/Tables/Inductive_model_comparison_df.tex}
@@ -328,15 +308,13 @@
     \end{table*}
 
 
-    In the inductive setting, introduced in \citep{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}, and are similar to the transductive case.
+    In the inductive setting, introduced in \cite{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}, and are similar to (and not significantly different from) the transductive case, though differences with logistic regression are significant.
 
     \section*{Conclusion}
 
-    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features. Our experimental graph neural network based on mentions in company calls behaved similarly to logistic regression. We have a moderate degree of evidence that NLP features are important within our specific setup.
+    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features. Our experimental graph neural network based on mentions of other companies calls behaved somewhat in-between these two methods. We have a moderate degree of evidence that NLP features are important within our specific setup.
 
-    There remains substantial opportunity for future improvements to this project. We would have liked to incorporate more metadata for our calls into predictions, leveraging date and time series components. Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy. We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization. Finally, there are other potential modifications to our network of firms and graph neural network, such as experimenting with the use of Doc2Vec embeddings and cosine similarities for network construction on our data, which seem to work well for prior work. We might also incorporate weighted edges for the number of actual mentions, and experiment with more model architectures. Nevertheless, it seems likely that mastery of credit rating prediction (especially including rich representations of text from earnings calls) is within reach, as demonstrated by our models.
-
-    Possibly using links from the network of firms on the network of calls
+    There remains substantial opportunity for future improvements to this project. We would have liked to incorporate more metadata for our calls and financial information into predictions, leveraging date and time series components. Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy.\footnote{We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization.} Finally, there are other potential modifications to our network of firms and graph neural network, such as experimenting with the use of Doc2Vec embeddings and cosine similarities for network construction on our data, which seem to work well in \cite{das_credit_2023}. We might make specific adjustments to architecture to handle individual fixed quarter date subgraphs, and incorporate weighted edges for the number of actual mentions.\footnote{We might also consider forming connections between nodes for the same company across time, though these sorts of temporal impacts may already be addressed with our inclusion of changes in ratios and level. Such a modification may also introduce undesired heterogeneity in the meaning of an edge.} Overall, it seems likely that mastery of credit rating prediction (especially when including rich representations of text from earnings calls) is within reach.
 
     \section*{Acknowledgements}
 
@@ -409,7 +387,7 @@
     
     We removed all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from, as well as calls for companies that provide them on an annual, rather than quarterly basis.
 
-    For our financial data, we limited our observations to items reported in USD, checked for and corrected values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits are 000.00 and the item is above or below the 2.5\% and 97.5\% quantile, we divide by 1,000.} and checked some accounting identities in \cite{das_credit_2023},\footnote{We checked total liabilities are greated than current liabilities, total assets are greater than total current assets, and net sales (revenue) is greated than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discarded observations where statement filing dates do not agree between the three types of statements, where the filing date falls outside of the fixed quarter matched on via earnings call date, and where the filing date is more than 45 days after the earnings call date.
+    For our financial data, we limited our observations to items reported in USD, checked for and corrected values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits were 000.00 and the item was above or below the 2.5\% and 97.5\% quantile, we divided by 1,000.} and checked some accounting identities in \cite{das_credit_2023},\footnote{We checked total liabilities were greater than current liabilities, total assets were greater than total current assets, and net sales (revenue) was greater than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discarded observations where statement filing dates did not agree between the three types of statements (income statement, balance sheet, and cash flow statement), where the filing date fell outside of the fixed quarter matched on via earnings call date, and where the filing date was more than 45 days after the earnings call date.
 
     We removed observations with outliers for any NLP feature, produced, for example, as a result of zeroes or low values in denominators.
 
@@ -545,7 +523,7 @@
 
     (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
 
-    There are modifications of the test to handle small values of $b+c$ to make it exact with a binomial distribution, as well as methods to perform continuity correction, but for our purposes these versions produced the same conclusions regarding significance at 5\%.
+    There are modifications of the test to handle small values of $b+c$ to make it exact with a binomial distribution, as well as methods to perform continuity correction, but for our purposes these versions almost always produced the same conclusions regarding significance at 5\%.
 
     McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
 
@@ -623,7 +601,7 @@
         \label{tab:include-previous-model-comparison}
     \end{table*}
 
-    Table \ref{tab:include-previous-permutation-importance} substantiates this finding, showing that shuffling previous rating variables leads to a large drop in accuracy. Financial variables round out the list of important contributing features, and contribute far less information.
+    Table \ref{tab:include-previous-permutation-importance} substantiates the dominance of previous rating, showing that shuffling its constituent variables leads to large drops in accuracy. Financial variables round out the list of important contributing features, and contribute far less information.
 
     \begin{table*}[h!]
         \centering
@@ -650,7 +628,7 @@
 
     \label{sec:change-prediction}
 
-    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income are already quarterly changes in a company's financial position).
+    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income, are already quarterly changes in a company's financial position).
 
     Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}). We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
 
@@ -688,5 +666,36 @@
         \hfill
         \label{fig:change-confusion-matrix}
     \end{figure*}
+
+    \clearpage
+    \newpage
+
+    \subsection{Graph Neural Network Architecture}
+
+    \label{sec:gnn-architecture}
+
+    % begin lyx insertion
+
+    A GraphSage GCN is trained across a number of timesteps (here indexed by $r$) which progressively mix information from the embeddings of more and more distant neighbors. Creating these embeddings for a given timestep is a two-step process.
+
+    First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. We use what is referred to as pool or pooling aggregation: for node $h$, with neighborhood $N(i)$, at timestep $r$,
+
+    \[
+    h_{N(i)}^{(r)}=max[(\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
+    \]
+
+    meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
+
+    Next, during the update (or COMBINE) step, we concatenate the representation of our node of interest from the previous timestep with this aggregated vector, then apply another set of weights and activation (in our case, ReLU again) to get a fully updated node representation.
+
+    \[
+    h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
+    \]
+
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output with dimension of the number of classes (for each node), while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. 
+    
+    The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 300 epochs at a learning rate of 0.01, using a class stratified 80-20 train-val split and selecting the model state from the epoch with the highest validation accuracy.
+
+    % end lyx insertion
 
 \end{document}
