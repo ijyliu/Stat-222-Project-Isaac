@@ -71,23 +71,26 @@
 
 \input{../Output/Modelling/Random Guess/random_guess.tex}
 
+\input{../Output/All Data EDA/Tabular EDA/train_test_split.tex}
+
+
 \begin{document}
 
 	\maketitle
 
     \section*{Introduction}
 
-    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors,\footnote{There is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}.} and by any parties seeking interpolated ratings for companies that do not have them.
+    Corporate credit ratings represent professional estimations of the default risk carried by company debt. These ratings represent critical information for investors - not just institutional investors and financially sophisticated bondholders, but also individual stockholders, who may be wiped out completely in the event of bankruptcy. Analyzing ways to predict ratings can offer substantial value to a variety of stakeholders. Predictive models may be useful for investors without access to data, companies or potential lenders that seek information about influential factors,\footnote{There is evidence suggesting financial factors and projections have a causal impact on ratings and are not manipulated by companies in response to forecasted rating changes \citep{he_impact_2018}.} and by any parties seeking interpolated ratings for companies that do not have them.
 
-    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences.\footnote{Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information.} Features capturing call readability, transparency, and engagement join pre-trained language model representations of sentiment \citep{araci_finbert_2019} and traditional tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. We also make use of advances in the study of graph neural networks to model linkages between firms implied by mentions in calls. \citep{das_credit_2023}
+    In this project, we seek to fully leverage the text of earnings calls, along with traditional financial measures and variables, to improve predictions of corporate credit ratings for any given company and quarter and better understand the importance of various influences.\footnote{Though much literature has focused on financial statements and reports and credit ratings (as just one example, see \cite{makwana_understanding_2022}), our paper takes a relatively underexplored approach, instead incorporating earnings call transcripts. We believe calls offer a richer picture of a firm's financial prospects because they include two-way conversation between company management and financial analysts in form of a Q and A section. This section incorporates the broader beliefs and concerns of the financial community into our predictions. Additionally, in contrast to financial statements, which must be (noisily) parsed to identify sections relevant to management analysis, earnings calls provide more directly valuable and readily available information.} Features capturing call readability, transparency, and engagement join classical and pre-trained language model representations of sentiment \citep{araci_finbert_2019} and traditional tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. We also make use of advances in the study of graph neural networks to model linkages between firms \citep{das_credit_2023}, in our case implied by mentions in calls.
 
-    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades. Unigram and bigram word frequencies were used with the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more recent techniques such as neural language models and a wider variety of algorithms for classification.
+    To the best of our knowledge, the closest prior work to ours is \cite{donovan_measuring_2021}, which leverages the textual content of earnings calls and financial statements to predict credit events such as bankruptcies, interest spread changes, and rating downgrades. Unigram and bigram word frequencies were used with the supervised machine learning techniques of Support Vector Regression, Latent Dirichlet Allocation, and Random Forests. The coefficient on a constructed textual measure of credit risk was found to be significant up to the 1\% level. In contrast to this approach, we focus on predicting the credit ratings themselves, and integrate more recent techniques such as neural language models and a wider variety of algorithms for classification.
 
     \section*{Data and Exploratory Data Analysis}
 
     We combine a wide variety of data sources to support our predictions of credit ratings - merging rating data with company earnings calls, financial statement variables, and industry sector. In our combined dataset, each observation represents a fixed quarter date (1/1, 4/1, 7/1, 10/1) for a company, with the company's most recent credit rating, earnings call and associated financial statement variables, and sector attached. An example of many of the variables for a company by fixed quarter date can be found in Appendix Section \ref{sec:one-obs-final-data}.
 
-    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. Details of our data cleaning and filtering steps can be found in Appendix Section \ref{sec:data-cleaning}. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
+    Our scope of interest is publicly traded companies from 2010-2016 (a limitation due to the availability of credit rating data) - the distribution of call year and quarters can be found in Appendix Figure \ref{fig:obs-by-quarter-year}. We took many steps to remove or Winsorize errors and outliers - details of our data cleaning and filtering steps can be found in Appendix Section \ref{sec:data-cleaning}. In all, we have \numQuarters \space quarters for \numCompanies \space unique companies.
 
     \subsection*{Credit Ratings}
 
@@ -118,7 +121,7 @@
 
     \subsection*{Financial Statements}
 
-    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios and combinations of levels of variables (for a list, see variables in Table \ref{tab:financial_summary_statistics}).
+    Our financial statement variables are also retrieved using the Financial Modelling Prep API. We make use of items from company balance sheets, cash flow statements, and income statements, as well as company market capitalization. We also calculated and included a wide variety of ratios and combinations of levels of variables (for a list, see Appendix Section \ref{sec:financial-summary-statistics}).
 
     \begin{figure*}
         \caption{Altman Z-Score}
@@ -137,11 +140,11 @@
         \label{fig:altman-z-score}
     \end{figure*}
 
-    In some of our models, we make use of Altman's Z-score \citep{altman_financial_1968}, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities (for details on the construction of the score, see Appendix Section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of Z-scores in our dataset. Traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to imply a high chance of bankruptcy. The average scores for each rating in our data seem to align well with this interpretation, with high scores being associated with higher ratings in a linear manner. Apart from a few quirks on the ends of the rating spectrum (where not many companies and ratings are available), Z-Score demonstrated strong potential as a predictor.
+    In some of our models, we make use of Altman's Z-score \citep{altman_financial_1968}, a traditional measure of bankruptcy risk that accounts for company earnings, equity, and assets and liabilities (for details on the construction of the score, see Appendix Section \ref{sec:altman-z-score}). Figure \ref{fig:altman-z-score} shows the distribution of Z-scores in our dataset. Traditionally, values above 3.0 have been considered safe, while those below 1.8 are considered to imply a high chance of bankruptcy.  The average scores for each rating in our data seem to align well with this interpretation, with high scores being associated with higher ratings in a linear manner. Though our distribution of scores is skewed, with a long right tail, and though the relationship between ratings and average scores breaks down on the ends of the rating spectrum (where not many companies and ratings are available), Z-Score demonstrated potential as a predictor.
       
     \subsection*{Sector}
 
-    The GCIS industry classification standard divides companies into 11 major industry sectors \citep{s_and_p_gics_2024}.\footnote{There are finer groupings as well, but this data was not easily obtainable for our project.} It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format \citep{kozlov_us_2022} and supplemented them with manual lookup. Figure \ref{fig:firms-by-sector} shows the sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors. However, when we quantify ratings and compute average values by sector, we do not see large differences, suggesting our results still may provide some generalizability. Though it was not clear that sector provided enough useful variation in rating to be a useful predictor, we still included it in our models based on its potential to improve models including other controls or interactions (such as tree-based methods).
+    The GCIS industry classification standard divides companies into 11 major industry sectors \citep{s_and_p_gics_2024}.\footnote{There are finer groupings as well, but this data was not easily obtainable for our project.} It is widely used in the financial community, and was developed in part by S and P, the same company responsible for our credit ratings. We obtained classifications from Kaggle in CSV format \citep{kozlov_us_2022} and supplemented them with manual lookup. Figure \ref{fig:firms-by-sector} shows the sectoral imbalance present in our data, with a large share of firms in consumer, industrial, and technology sectors. However, when we quantify ratings and compute average values by sector, we do not see large differences, suggesting our results still may provide some generalizability. Though it was not clear that sector alone provided enough useful variation in rating to be a useful predictor, we still included it in our models based on its potential to improve models including other controls or interactions.
 
     \begin{figure*}
         \caption{Sector}
@@ -172,7 +175,7 @@
         \end{equation*}
         \item Word Count
         \item Normalized Number of Questions - Count of question marks, divided by call word count
-        \item Tone - Following \cite{price_earnings_2012}, we use the Harvard dictionary to count words falling in various categories (Positive, Negative, Active, Passive, etc.). Then we construct tone using the first principal component of the matrix with each call as a row and each column as one of the following:
+        \item Tone - Following \cite{price_earnings_2012}, we use the Harvard IV Psychosocial dictionary to count words falling in various categories (Positive, Negative, Active, Passive, etc.).\footnote{In addition to the tone feature described, we also incorporate these counts as individual features.} Then we construct tone using the first principal component of the matrix with each call as a row and each column as one of the following:
         \begin{equation*}
             \frac{\text{Positive}}{\text{Negative}}, \frac{\text{Active}}{\text{Passive}}, \frac{\text{Strong}}{\text{Weak}}, \frac{\text{Overstated}}{\text{Understated}}
         \end{equation*}
@@ -193,7 +196,7 @@
 
     \section*{Network of Firms}
 
-    In addition to our standard NLP features, which already capture a rich representation, we also created a network graph representing the connections between firms based on mentions within calls. We deployed transformer-based named-entity recognition \citep{spacy_spacy_2024} to identify company names in the text, then matched these names to standardized versions. An interactive visualization of our entire network of firms (aggregating mentions up from the call level - where we also have a network) can be found at \url{https://sites.google.com/view/isaac-liu/company-mentions-network}, and a ~50\% sample of nodes (faster load time) can be found at \url{https://sites.google.com/view/isaac-liu/co-mentions-50-node-sample}.
+    In addition to our standard NLP features, which already capture a rich representation, we also created a network graph representing the connections between firms based on mentions within calls. We deployed transformer-based named-entity recognition \citep{spacy_spacy_2024} to identify company names in the text, then cleaned and matched these names to standardized versions.\footnote{Interestingly, we found that simple code to remove words such as ``Company'', ``Inc.'', etc. followed by an exact match ignoring case outperformed fuzzy matching algorithms such as Levenshtein distance and q-gram similarity.} An interactive visualization of our entire network of firms (aggregating mentions up from the call level - where we also have a network) can be found at \url{https://sites.google.com/view/isaac-liu/company-mentions-network}, and a ~50\% sample of nodes (faster load time) can be found at \url{https://sites.google.com/view/isaac-liu/co-mentions-50-node-sample}.
 
     \section*{Modelling}
 
@@ -203,7 +206,7 @@
         \text{Predicted Credit Rating} = f(\text{Altman's Z}, \text{Financial Variables}, \text{Sector}, \text{NLP Features})
     \end{equation*}
 
-    We performed an 80-20 train-test split on our data, and used 5-fold cross validation to select hyperparameters for the Logistic Regression and XGBoost models.
+    We performed an 80-20 train-test split on our data (\trainCount \space train, \testCount \space test), and used 5-fold cross validation to select hyperparameters for the Logistic Regression and XGBoost models.
 
     \subsection*{Logistic Regression}
 
@@ -216,7 +219,7 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class.\footnote{The model also does not significantly outperform a random guess model based on the distribution or ratings in the training dataset, which achieved an accuracy of \ratingRGAcc.} Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class.\footnote{This model also does not significantly outperform a random guess model based on the distribution or ratings in the training dataset, which achieved an accuracy of \ratingRGAcc.} Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
 
     \begin{table*}[h!]
         \centering
@@ -237,7 +240,6 @@
         \label{tab:logistic-most-complex-confusion-matrix-and-permutation-importance}
     \end{table*}
 
-
     The left side of Table \ref{tab:logistic-most-complex-confusion-matrix-and-permutation-importance} shows that our most complex model with financial and NLP features generally performs well across all classes (for details, see Appendix Section \ref{sec:logistic-most-complex-model-additional-details}). This is in large part due to our use of balanced class weighting to handle rare classes. We also found via grid search that an Elastic Net penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C) effectively handles the large number of variables present in our data. The right side of Table \ref{tab:logistic-most-complex-confusion-matrix-and-permutation-importance} shows the 15 most important individual features as determined by the average drop in test accuracy when the feature is permuted 1,000 times. Financial features appear to be the most important, with some contributions from our NLP features considering tone and word count.
 
     \subsection*{XGBoost}
@@ -251,7 +253,7 @@
         \label{tab:xgboost-model-comparison}
     \end{table*}
 
-    Table \ref{tab:xgboost-most-complex-confusion-matrix-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Our selected hyperparameters, described in detail in Appendix Section \ref{sec:xgboost-most-complex-model-additional-details}, appear to have worked well on this dataset. Financial features appear to be the most important individual variables, though NLP features also contribute in aggregate (FinBERT positivity, the negative and understated components of tone, and numeric transparency contribute substantially at rank \rPosScoreFinbert, \rNeg, and \rUndrst \space respectively - word count less so, at rank \rWordCount). Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance.
+    Table \ref{tab:xgboost-most-complex-confusion-matrix-and-permutation-importance} demonstrates that this strong performance by our most complex model is consistent across all classes. Our selected hyperparameters, described in detail in Appendix Section \ref{sec:xgboost-most-complex-model-additional-details}, appear to have worked well on this dataset. Financial features appear to be the most important individual variables, though NLP features also contribute in aggregate (FinBERT positivity, the negative and understated components of tone, and numeric transparency contribute substantially at rank \rPosScoreFinbert, \rNeg, and \rUndrst \space respectively - word count less so, at rank \rWordCount).\footnote{Given that our specific tone components are counts of words, they may have absorbed some of the predictive power of the word count feature in this case.} Relative to prior work, our addition of far more financial factors, in combination with complex and transformer-based NLP features, in our large dataset, appears to greatly improve performance.
 
     \begin{table*}[h!]
         \centering
@@ -274,13 +276,13 @@
 
     \subsection*{Graph Neural Network}
 
-    We make use of the network of company mentions within earnings calls to train an end-to-end graph neural network for classification. Graph Neural Networks construct powerful representations of nodes/entities in a network of relationships by using message passing to aggregate features from neighboring nodes. In this work, we use a GraphSAGE \citep{hamilton_inductive_2018} Graph Convolutional Network (GCN) implemented via the Deep Graph Library. \citep{deep_graph_library_deep_2024} For details concerning our network architecture, see Appendix Section \ref{sec:gnn-architecture}.
+    We make use of the network of company mentions within earnings calls to train an end-to-end graph neural network for classification. Graph Neural Networks construct powerful representations of nodes/entities in a network of relationships by using message passing to aggregate features from neighboring nodes. In this work, we use a GraphSAGE \citep{hamilton_inductive_2018} Graph Convolutional Network (GCN) implemented via the Deep Graph Library. For details concerning our network architecture, see Appendix Section \ref{sec:gnn-architecture}.
 
     % end lyx insertion
 
     To initialize our network, we form an unweighted and undirected edge connection between nodes of firm by fixed quarters based on the full firm to firm graph (which was aggregated across quarters) discussed earlier. Our network consists of subgraphs for each fixed quarter date. If two firms are ever connected via a mention, their nodes are always connected within each fixed quarter date. When we include only nodes that are connected to others, and nodes for rating classes with more than one value in the training data, we are left with \numNodes \space nodes (\numTrainNodes \space training, \numTestNodes \space test) falling into \gnnNumClasses \space rating classes, and \numEdges \space edges between these company-quarters. The average degree of the network is \averageDegree \space connections.
 
-    For reference, we also constructed comparisons with our other classifiers including financial and NLP features on the graph neural network's dataset. Logistic regression and XGBoost achieved an accuracies of \pretrainedLRAccuracy \space and \pretrainedXGBAccuracy \space on the graph neural network's test set. A possibly fairer comparison are the accuracies we achieved on this set after fully retraining the classifiers (with the same hyperparameters as earlier) on the graph neural network's training set, which were \retrainLRAccuracy \space and \retrainXGBAccuracy.
+    For reference, we also constructed comparisons with our other classifiers including financial and NLP features on the graph neural network's dataset. Logistic regression and XGBoost achieved an accuracies of \pretrainedLRAccuracy \space and \pretrainedXGBAccuracy \space on the graph neural network's test set. A possibly fairer comparison are the accuracies we achieved on this set after fully retraining these classifiers (albeit with the same hyperparameters as earlier) on the graph neural network's training set, which were \retrainLRAccuracy \space and \retrainXGBAccuracy.
 
     \begin{table*}[h!]
         \centering
@@ -296,7 +298,7 @@
         \label{tab:transductive-model-comparison-and-confusion-matrix}
     \end{table*}
 
-    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model must be retrained when a new node for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}. Our performance is slightly better than that of logistic regression (statistically signficant improvement over retrained logisitc regression but not significant versus the pretrained version) but trails that of XGBoost,\footnote{It is sometimes stated that XGBoost and tree-based algorithms can outperform neural networks on heterogenous data - our diverse collection of variables from a variety of sources fall in line with such an explanation.} and similar to the logistic case, the NLP features do not clearly contribute.
+    Graph Neural Networks for node classification may be trained transductively or inductively. In the transductive setting, the entire graph of firms - the training and test dataset, and their associated features - is visible to the model for training, but the labels for the test dataset are masked. Therefore, the model is retrained when a new node for which a prediction is to be made is added. The performance for our transductive models is shown in Table \ref{tab:transductive-model-comparison-and-confusion-matrix}. Our performance is slightly better than that of logistic regression (statistically significant relative to the retrained, though not pretrained version) but trails that of XGBoost,\footnote{It is sometimes stated that XGBoost and tree-based algorithms can outperform neural networks on heterogenous data - our diverse collection of variables from a variety of sources fall in line with such an explanation.} and similar to the logistic case, NLP features do not clearly contribute.
 
     \begin{table*}[h!]
         \centering
@@ -313,13 +315,13 @@
     \end{table*}
 
 
-    In the inductive setting, introduced in \cite{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}, and are similar to (and not significantly different from) the transductive case, though differences with logistic regression are significant.
+    In the inductive setting, introduced in \cite{hamilton_inductive_2018} with GraphSAGE, the model can only see the network of nodes in the training dataset, and uses this to learn general functions for embedding nodes. This makes the model easier to adapt to new data, but may come at some cost to performance. Our inductive results are shown in Table \ref{tab:inductive-model-comparison-and-confusion-matrix}, and are similar to (and not significantly different from) the transductive case, though differences with both logistic regression models are now significant.
 
     \section*{Conclusion}
 
-    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features. Our experimental graph neural network based on mentions of other companies calls behaved somewhat in-between these two methods. We have a moderate degree of evidence that NLP features are important within our specific setup, and most of them contribute in at least some models.
+    In this paper we demonstrated methods to incorporate the text of earnings call transcripts to improve predictions of corporate credit ratings. Simple logistic regression achieves middling accuracy on the difficult task of rating prediction, which is not signficantly improved by the addition of NLP features. When we implement XGBoost to better account for interactions between variables, however, performance reaches state-of-the-art/near-state-of-the-art levels, with a substantial contribution from NLP features. Our experimental graph neural network based on mentions of other companies calls behaved somewhat in-between these two methods. We have a moderate degree of evidence that NLP features are important within our specific setup when used with a sufficiently capable classifier, and most of them (particularly aspects of tone, positivity, numeric transparency, and word count) contribute in at least some models.
 
-    There remains substantial opportunity for future improvements to this project. We would have liked to incorporate more metadata for our calls and financial information into predictions, leveraging date and time series components. Though our XGBoost classifier already performed well, with more time we would have liked to explore more hyperparameters to further improve accuracy.\footnote{We based our initial hyperparameter settings in part based off of optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more exact specifications also using Bayesian optimization.} Finally, there are other potential modifications to our network of firms and graph neural network, such as experimenting with the use of Doc2Vec embeddings and cosine similarities for network construction on our data, which seem to work well in \cite{das_credit_2023}. We might make specific adjustments to architecture to handle individual fixed quarter date subgraphs, and incorporate weighted edges for the number of actual mentions.\footnote{We might also consider forming connections between nodes for the same company across time, though these sorts of temporal impacts may already be addressed with our inclusion of changes in ratios and level. Such a modification may also introduce undesired heterogeneity in the meaning of an edge.} Overall, it seems likely that mastery of credit rating prediction (especially when including rich representations of text from earnings calls) is within reach.
+    There remains substantial opportunity for future improvements to this project. We would have liked to incorporate more metadata for our calls and financial information into predictions, leveraging date and time series components. Though our XGBoost classifier already performs well, with more time we would have liked to explore more hyperparameters to further improve accuracy.\footnote{We based our initial hyperparameter settings and grid in part on optimal results from the Autogluon AutoML library \citep{erickson_autogluon_2024} for a model similar to our most complex one, but we would have loved to explore more specifications for our exact final model also using Bayesian optimization (and potentially from other libraries).} There are other potential modifications to our network of firms and graph neural network that might be good to explore. We could have experimented with the use of Doc2Vec embeddings and cosine similarities for network construction on our data, which seemed to work well in \cite{das_credit_2023}. A different foundational approach would be to extract graph node embeddings and use them with another classifier (likely XGBoost). We might make specific adjustments to architecture to handle individual fixed quarter date subgraphs, and incorporate weighted edges for the number of actual mentions.\footnote{We might also consider forming connections between nodes for the same company across time, though these sorts of temporal impacts may already be addressed with our inclusion of changes in ratios and level. Such a modification may also introduce undesired heterogeneity in the meaning of an edge.} Overall, it seems likely that mastery of credit rating prediction (especially when including rich representations of text from earnings calls) is within reach.
 
     \section*{Acknowledgements}
 
@@ -346,7 +348,7 @@
 
     \label{sec:one-obs-final-data}
 
-    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score, capturing the company's excellent financial condition. Sentiment and tone of the earnings call for this quarter were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (boldly indicating more commentary), and word count/call length was around average.
+    Figure \ref{fig:one-obs-final-data} shows some variables for Apple Inc. for the fixed quarter date of October 1, 2014. Apple had a strong rating of AA at this time. This was supported, in part, by a relatively high Altman Z-Score, capturing the company's excellent financial condition. Sentiment and tone of the earnings call for this quarter were generally positive, numeric transparency indicates there was a relatively high share of words to numbers (indicating more potentially bold commentary), and word count/call length was around average.
 
     \begin{figure*}[h]
         \caption{Apple Inc., October 1, 2014}
@@ -390,7 +392,7 @@
     
     We identified one bankruptcy in our data - Peabody Energy on April 13, 2016 - and on further investigation, deleted some quarters with incorrect ratings. 
     
-    We removed all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from, as well as calls for companies that provide them on an annual, rather than quarterly basis.
+    We removed all calls that happened more than 250 days prior and after the first day of the year and quarter they are supposed to discuss the results from, as well as calls for companies that hold them on an annual, rather than quarterly basis.
 
     For our financial data, we limited our observations to items reported in USD, checked for and corrected values off by a factor of 1,000 as a result of parsing,\footnote{If the last few digits were 000.00 and the item was above or below the 2.5\% and 97.5\% quantile, we divided by 1,000.} and checked some accounting identities in \cite{das_credit_2023},\footnote{We checked total liabilities were greater than current liabilities, total assets were greater than total current assets, and net sales (revenue) was greater than EBIT. We originally also checked that total assets were greater than or equal to total equity + retained earnings + total liabilities, but this proved to be too restrictive.} setting failing variables to missing. We also discarded observations where statement filing dates did not agree between the three types of statements (income statement, balance sheet, and cash flow statement), where the filing date fell outside of the fixed quarter matched on via earnings call date, and where the filing date was more than 45 days after the earnings call date.
 
@@ -401,7 +403,9 @@
 
     \subsection{Summary Statistics for Financial Variables}
 
-    Table \ref{tab:financial_summary_statistics} shows summary statistics for the financial variables we include in our models, including sub-components of Altman's Z Score. Other important variables are explained in the main text.
+    \label{sec:financial-summary-statistics}
+
+    Table \ref{tab:financial_summary_statistics} shows summary statistics for the financial variables we include in our models (including sub-components of Altman's Z Score) in our final prepared data.\footnote{We did not Winsorize all of our financial ratios (though we could have) due to general agreement on even extreme values with \cite{das_credit_2023}.} Other important variables are explained in the main text.
 
     \input{../Output/All Data EDA/Tabular EDA/Financial_Summary_Statistics.tex}
 
@@ -477,121 +481,6 @@
 
     \clearpage
     \newpage
-    \subsection{McNemar's Test}
-
-    \label{sec:mcnemars-test}
-
-    We make use of McNemar's Test to check for statistically significant differences between our models (usually those without NLP features and including NLP features).
-
-    This test makes use of the following contingency table using counts over observations in our test dataset:
-
-    \begin{center}
-        \begin{tabular}{|c|c|c|c|}
-            \hline 
-                & Model B Correct & Model B Incorrect & Row Total\tabularnewline
-            \hline 
-            \hline 
-            Model A Correct & $a$ & $b$ & $a+b$\tabularnewline
-            \hline 
-            Model A Incorrect & $c$ & $d$ & $c+d$\tabularnewline
-            \hline 
-            Column Total & $a+c$ & $b+d$ & $n$\tabularnewline
-            \hline 
-        \end{tabular}
-    \par\end{center}
-
-    Under the null hypothesis of identical performance, the marginal probabilities of each model being correct and incorrect are the same: 
-
-    \[
-    p_{a}+p_{b}=p_{a}+p_{c}
-    \]
-
-    \[
-    p_{c}+p_{d}=p_{b}+p_{d}
-    \]
-
-    which reduces to
-
-    \[
-    H_{0}:p_{b}=p_{c}
-    \]
-
-    \[
-    H_{1}:p_{b}\neq p_{c}
-    \]
-
-    The test statistic is
-
-    \[
-    \frac{(b-c)^{2}}{b+c}\sim\chi_{1}^{2}
-    \]
-
-    (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
-
-    There are modifications of the test to perform continuity correction, as well as to handle small values of $b+c$ by making it exact with a binomial distribution, but for our purposes these versions always produced the same conclusions regarding significance at 5\%.
-
-    McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
-
-    The results of our tests are shown in Table \ref{tab:p-values} below. Results are rounded to two decimal places. Items are dashed where there was no difference in accuracy.
-
-    \begin{table*}[h!]
-        \centering
-        \caption{p-values for McNemar's Test}
-        \input{../Output/Modelling/p_values_table.tex}
-        \label{tab:p-values}
-    \end{table*}
-
-    \clearpage
-    \newpage
-    \subsection{Logistic Regression - Most Complex Model - Additional Details}
-
-    \label{sec:logistic-most-complex-model-additional-details}
-
-    Table \ref{tab:logistic-most-complex-classification-report} shows our detailed classification report for our logistic regression model incorporating all of the financial and NLP features. Our use of balanced class weighting enables the model to perform fairly well, even for rare classes.
-
-    \begin{table*}[h!]
-        \centering
-        \caption{Classification Report - Most Complex Logistic Regression Model}
-        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
-        \label{tab:logistic-most-complex-classification-report}
-    \end{table*}
-
-    In addition to this, Table \ref{tab:logistic-most-complex-best-params} shows all the optimal hyperparameters we were able to find via grid search. We are able to handle our high-dimensional data with hundreds of variables effectively by using an L1 penalty (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C). A one versus rest multiclass prediction setup is used, where a binary is/is not logistic regression probability is estimated for each class, and the class with the highest score is taken.
-
-    \begin{table*}[h!]
-        \centering
-        \caption{Best Hyperparameters - Most Complex Logistic Regression Model}
-        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
-        \label{tab:logistic-most-complex-best-params}
-    \end{table*}
-
-    \clearpage
-    \newpage
-
-    \subsection{XGBoost - Most Complex Model - Additional Details}
-
-    \label{sec:xgboost-most-complex-model-additional-details}
-
-    Table \ref{tab:xgboost-most-complex-classification-report} shows our detailed classification report for our XGBoost model incorporating all features. Though we do not use balanced class weighting, recall for small classes is generally very good.
-
-    \begin{table*}[h!]
-        \centering
-        \caption{Classification Report - Most Complex XGBoost Model}
-        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
-        \label{tab:xgboost-most-complex-classification-report}
-    \end{table*}
-
-    Table \ref{tab:xgboost-most-complex-best-params} displays the optimal hyperparameters for our XGBoost model incorporating all financial and NLP features. To minimize risk of overfitting, we employed a gamma parameter to control the minimum loss reduction required to make further leaf nodes, in addition to limitations on maximum tree depth and the minimum weight needed to make a further split. We used a fairly high number of estimators to create our predictions.
-
-    \begin{table*}[h!]
-        \centering
-        \caption{Best Hyperparameters - Most Complex XGBoost Model}
-        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
-        \label{tab:xgboost-most-complex-best-params}
-    \end{table*}
-
-    \clearpage
-    \newpage
 
     \subsection{Including Previous Rating}
 
@@ -642,7 +531,7 @@
 
     \label{sec:change-prediction}
 
-    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to oversample the minority classes in the training data and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income, are already quarterly changes in a company's financial position).
+    As shown in Figure \ref{fig:credit-ratings}, \shareNotChanges \space of ratings remain the same from one fixed quarter date to the next (\shareNotChangesTest \space in our test dataset). This poses a serious challenge for predicting changes, a task easily dominated by the majority class. We implemented SMOTE (Synthetic Minority Over-sampling Technique) \citep{chawla_smote_2002} to create synthetic observations in the minority classes in the training data (between existing data points) and balance the dataset, adding 2,000 additional observations. We also differenced all financial variables that were ratios in order to get useful changes from quarter to quarter (many of our level variables, such as quarterly revenue or income, are already quarterly changes in a company's financial position).
 
     Table \ref{tab:change-model-comparison} shows that SMOTE decreases the accuracy of our models relative to simply predicting the majority class, but increases the recall of the minority classes slightly in some cases (Figure \ref{fig:change-confusion-matrix}).\footnote{A random guess model for rating changes received an accuracy of \changeRGAcc, better than most of our models, except for the two most complex XGBoost specifications.} We were not able to find a specification that greatly improved our predictions of minority classes. Improvements in accuracy when adding NLP features are small and insignificant.
 
@@ -684,6 +573,122 @@
     \clearpage
     \newpage
 
+    \subsection{McNemar's Test}
+
+    \label{sec:mcnemars-test}
+
+    We make use of McNemar's Test to check for statistically significant differences between our models (usually those without NLP features and including NLP features).
+
+    This test makes use of the following contingency table using counts over observations in our test dataset:
+
+    \begin{center}
+        \begin{tabular}{|c|c|c|c|}
+            \hline 
+                & Model Y Correct & Model Y Incorrect & Row Total\tabularnewline
+            \hline 
+            \hline 
+            Model X Correct & $a$ & $b$ & $a+b$\tabularnewline
+            \hline 
+            Model X Incorrect & $c$ & $d$ & $c+d$\tabularnewline
+            \hline 
+            Column Total & $a+c$ & $b+d$ & $n$\tabularnewline
+            \hline 
+        \end{tabular}
+    \par\end{center}
+
+    Under the null hypothesis of identical performance, the marginal probabilities of each model being correct and incorrect are the same: 
+
+    \[
+    p_{a}+p_{b}=p_{a}+p_{c}
+    \]
+
+    \[
+    p_{c}+p_{d}=p_{b}+p_{d}
+    \]
+
+    which reduces to
+
+    \[
+    H_{0}:p_{b}=p_{c}
+    \]
+
+    \[
+    H_{1}:p_{b}\neq p_{c}
+    \]
+
+    The test statistic is
+
+    \[
+    \frac{(b-c)^{2}}{b+c}\sim\chi_{1}^{2}
+    \]
+
+    (chi-squared with one degree of freedom) under $H_{0}$, for sufficiently large $b$ and $c$ (heuristically, at least 10 for each). For a derivation (similar to that for the standard Chi-Squared test), see \cite{mcnemar_note_1947} or \cite{rice_mathematical_2006}. We can then compute p-values and assess significance at the 5\% level.
+
+    There are modifications of the test to perform continuity correction, as well as to handle small values of $b+c$ by making it exact with a binomial distribution, but for our purposes these versions always produced the same conclusions regarding significance at 5\%.
+
+    McNemar's test is paired, enabling us to effectively make comparisons between our models when they both face the same observations in the test dataset. At the same time, it operates on counts of the data (our counts correct and incorrect) and is non-parametric, without normality or other distributional assumptions. (Note: the test does still assume independence across observations, but it is difficult to perform testing without this.)
+
+    The results of our tests are shown in Table \ref{tab:p-values} below. p-values are rounded to two decimal places. Items are dashed where there was no difference in accuracy.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{p-values for McNemar's Test}
+        \input{../Output/Modelling/p_values_table.tex}
+        \label{tab:p-values}
+    \end{table*}
+
+    \clearpage
+    \newpage
+    \subsection{Logistic Regression - Most Complex Model - Additional Details}
+
+    \label{sec:logistic-most-complex-model-additional-details}
+
+    Table \ref{tab:logistic-most-complex-classification-report} shows our detailed classification report for our logistic regression model incorporating all of the financial and NLP features. Our use of balanced class weighting enables the model to perform fairly well, even for rare classes.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Classification Report - Most Complex Logistic Regression Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
+        \label{tab:logistic-most-complex-classification-report}
+    \end{table*}
+
+    In addition to this, Table \ref{tab:logistic-most-complex-best-params} shows all the optimal hyperparameters we were able to find via grid search. We are able to handle our high-dimensional data with hundreds of variables effectively by using Elastic Net (which collapses to entirely a LASSO penalty) with a slight amount of regularization (C). A one versus rest multiclass prediction setup is used, where a binary is/is not logistic regression probability is estimated for each class, and the class with the highest score is taken.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Best Hyperparameters - Most Complex Logistic Regression Model}
+        \input{../Output/Modelling/Logistic Regression/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
+        \label{tab:logistic-most-complex-best-params}
+    \end{table*}
+
+    \clearpage
+    \newpage
+
+    \subsection{XGBoost - Most Complex Model - Additional Details}
+
+    \label{sec:xgboost-most-complex-model-additional-details}
+
+    Table \ref{tab:xgboost-most-complex-classification-report} shows our detailed classification report for our XGBoost model incorporating all features. Though we do not use balanced class weighting, recall for small classes is usually very good.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Classification Report - Most Complex XGBoost Model}
+        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Model_Classification_Report.tex}
+        \label{tab:xgboost-most-complex-classification-report}
+    \end{table*}
+
+    Table \ref{tab:xgboost-most-complex-best-params} displays the optimal hyperparameters for our XGBoost model incorporating all financial and NLP features. To minimize risk of overfitting, we employed a gamma parameter to control the minimum loss reduction required to make further leaf nodes, in addition to limitations on maximum tree depth and the minimum weight needed to make a further split. We used a fairly high number of estimators to create our predictions.
+
+    \begin{table*}[h!]
+        \centering
+        \caption{Best Hyperparameters - Most Complex XGBoost Model}
+        \input{../Output/Modelling/XGBoost/Tables/exclude_previous_Most_Complex_Models_Best_Params.tex}
+        \label{tab:xgboost-most-complex-best-params}
+    \end{table*}
+
+    \clearpage
+    \newpage
+
     \subsection{Graph Neural Network Architecture}
 
     \label{sec:gnn-architecture}
@@ -695,7 +700,7 @@
     First, in the AGG step, the embeddings of the node's direct neighbors are aggregated. We use what is referred to as pool or pooling aggregation: for node $h$, with neighborhood $N(i)$, at timestep $r$,
 
     \[
-    h_{N(i)}^{(r)}=max[(\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
+    h_{N(i)}^{(r)}=max[\sigma(W_{pool}h_{j}^{(r-1)}+b),\forall j\in N(i)]
     \]
 
     meaning the neighboring embeddings from the previous timestep are fed through a fully connected neural network (weights $W_{pool}$, bias $b$, ReLU activation $\sigma)$, and then the elementwise maximum across the new neighbor representations is taken as the aggregated vector.
@@ -706,9 +711,9 @@
     h_{i}^{(r)}=\sigma(W^{(r)}*CONCAT[h_{i}^{(r-1)},h_{N(i)}^{(r)}])
     \]
 
-    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output with dimension of the number of classes (for each node), while we use vectors of size 128 for intermediate $h$ values. Our last layer does not have an activation function in the update step. 
+    The operations for each timestep ultimately represent a layer of the neural network - a SAGEConv layer, of which we have 3. For our classification task, the last of these produces output with dimension of the number of classes (for each node), while we use vectors of size 128 for intermediate $h$ values. Our implementation includes a bias term after the weight application in the update step, and the update step of our last layer does not have an activation function.
     
-    The entire process is trained end-to-end with cross entropy loss. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 300 epochs at a learning rate of 0.01, using a class stratified 80-20 train-val split and selecting the model state from the epoch with the highest validation accuracy.
+    Our entire process is trained end-to-end with cross entropy loss for rating classification. We perform weight decay at rate 1e-2, dropout at rate 0.4, and train for 300 epochs at a learning rate of 0.01, using a class stratified 80-20 train-val split and selecting the model state from the epoch with the highest validation accuracy.
 
     % end lyx insertion
 

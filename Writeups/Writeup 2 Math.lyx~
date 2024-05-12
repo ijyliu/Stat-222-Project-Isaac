@@ -186,23 +186,8 @@ McNemar's Test
 
 \begin_layout Standard
 We make use of McNemar's Test to check for statistically significant differences
- between our models without NLP features (
-\begin_inset Quotes eld
-\end_inset
-
-Model 2
-\begin_inset Quotes erd
-\end_inset
-
-) and including NLP features (
-\begin_inset Quotes eld
-\end_inset
-
-Model 3
-\begin_inset Quotes erd
-\end_inset
-
-).
+ between our models (usually those without NLP features and including NLP
+ features).
 \end_layout
 
 \begin_layout Standard
@@ -233,7 +218,7 @@ This test makes use of the following contingency table using counts over
 \begin_inset Text
 
 \begin_layout Plain Layout
-Model 3 Correct
+Model Y Correct
 \end_layout
 
 \end_inset
@@ -242,7 +227,7 @@ Model 3 Correct
 \begin_inset Text
 
 \begin_layout Plain Layout
-Model 3 Incorrect
+Model Y Incorrect
 \end_layout
 
 \end_inset
@@ -262,7 +247,7 @@ Row Total
 \begin_inset Text
 
 \begin_layout Plain Layout
-Model 2 Correct
+Model X Correct
 \end_layout
 
 \end_inset
@@ -309,7 +294,7 @@ Model 2 Correct
 \begin_inset Text
 
 \begin_layout Plain Layout
-Model 2 Incorrect
+Model X Incorrect
 \end_layout
 
 \end_inset
@@ -509,7 +494,7 @@ There are modifications of the test to handle small values of
 
  to make it exact with a binomial distribution, as well as methods to perform
  continuity correction, but for our purposes these versions produced the
- same conclusions regarding significant/not significant at 5%.
+ same conclusions regarding significance at 5%.
 \end_layout
 
 \begin_layout Standard
