@@ -211,7 +211,7 @@
         \label{tab:logistic-regression-model-comparison}
     \end{table*}
 
-    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class.\footnote{Despite our Winsorization, fairly large values of Altman Z remain in the dense right tail of the left panel of Figure \ref{fig:altman-z-score}. Such a phenomenon potentially damaged the quality of our linear model.} Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
+    Altman's Z-Score alone performs poorly - worse than simply assuming each rating belonged to the most common class. Substantial improvement can be attained by instead using underlying and additional financial variables (for a list, see Table \ref{tab:financial_summary_statistics}) as well as sector, and a slight further improvement by adding our NLP features - though this second improvement is not statistically significant (we made use of McNemar's test for all significance checks in this paper - see Appendix Section \ref{sec:mcnemars-test}). These models including financial variables very frequently bring the predicted rating one rating or less away from the actual.
 
     \begin{table*}[h!]
         \centering
