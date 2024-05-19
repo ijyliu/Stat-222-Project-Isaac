@@ -4,6 +4,8 @@ Textual Analysis of Financial Statements
 
 Zhengxing Cheng, Owen Lin, Isaac Liu, Sean Zhou
 
+A full writeup of the project (from Isaac) can be found [here](Writeups/Writeup 2.pdf).
+
 ## Guidance
 
 A variety of small datasets can be found in this repository. The main dataset we use for analysis is split into pieces contained in the folder `Data\All_Data\All_Data_with_NLP_Features`. The structure of our `Code` folders should be pretty self-explanatory.
