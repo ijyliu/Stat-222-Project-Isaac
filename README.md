@@ -4,7 +4,7 @@ Textual Analysis of Financial Statements
 
 Zhengxing Cheng, Owen Lin, Isaac Liu, Sean Zhou
 
-A full writeup of the project (from Isaac) can be found [here](Writeups/Writeup 2.pdf).
+A full writeup of the project (from Isaac) can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/blob/main/Writeups/Writeup%202.pdf).
 
 ## Guidance
 
