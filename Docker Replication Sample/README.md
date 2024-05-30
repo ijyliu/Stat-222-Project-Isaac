@@ -4,7 +4,7 @@ This folder implements model inference in a Docker container.
 
 To replicate, first ensure you have Docker installed.
 
-Then, within the "Docker Replication Sample" directory, run
+Then, within the "Docker Replication Sample" directory (this directory), run
 
 `docker build -t <your_desired_image_name> .`
 
