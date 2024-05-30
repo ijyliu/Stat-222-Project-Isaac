@@ -6,7 +6,7 @@ Zhengxing Cheng, Owen Lin, Isaac Liu, Sean Zhou
 
 A full writeup of the project (from Isaac) can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/blob/main/Writeups/Writeup%202.pdf).
 
-A Docker implementation of a replication sample can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Docker%20Replication%20Sample), or you may use the conda environment and notebook [here](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Code/Replication%20Sample).
+A Docker implementation of a replication sample can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Docker%20Replication%20Sample), or you may use the conda environment and notebook `Replication Sample.ipynb` in [this] folder (https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Code/Replication%20Sample).
 
 ## Guidance
 
