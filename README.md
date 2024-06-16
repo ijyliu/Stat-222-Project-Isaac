@@ -4,44 +4,29 @@ Textual Analysis of Financial Statements
 
 Zhengxing Cheng, Owen Lin, Isaac Liu, Sean Zhou
 
-A full writeup of the project (from Isaac) can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/blob/main/Writeups/Writeup%202.pdf).
+![1718506585446](image/README/1718506585446.png)
 
-A Docker implementation of a replication sample can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Docker%20Replication%20Sample), or you may use the conda environment and notebook `Replication Sample.ipynb` in [this](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Code/Replication%20Sample) folder.
+In this work, we introduce features gleaned from the deployment of advanced natural language processing techniques on the text of company earnings calls to a fine-grained credit rating prediction task. Features capturing call readability, transparency, and engagement join classical and pre-trained language model representations of sentiment and traditional tabular variables as inputs to a variety of supervised machine learning techniques for classification from logistic regression to tree-based methods. We also made use of named entity recognition to extract mentions of other companies from earnings calls, and used the network of mentions along with our features to train a GraphSAGE Graph Convolutional Neural Network. By adding our NLP features, we were able to improve the performance of our best performing XGBoost model by 14% to over 90%, outperforming prior work in the literature, even with our more difficult task of predicting individual ratings rather than investment grade status.
 
-## Guidance
+A full writeup of the project (from Isaac) can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/blob/main/Writeups/Writeup%202.pdf). An interactive visualization of the network for firms can be found [here ](https://sites.google.com/view/isaac-liu/demos/corporate-network/full-network?authuser=0)(full) and [here](https://sites.google.com/view/isaac-liu/demos/corporate-network/50-node-sample?authuser=0) (50% sample). A Docker implementation of a replication sample can be found [here](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Docker%20Replication%20Sample), or you may use the conda environment and notebook `Replication Sample.ipynb` in [this](https://github.com/ijyliu/Stat-222-Project-Isaac/tree/main/Code/Replication%20Sample) folder.
 
-A variety of small datasets can be found in this repository. The main dataset we use for analysis is split into pieces contained in the folder `Data\All_Data\All_Data_with_NLP_Features`. The structure of our `Code` folders should be pretty self-explanatory.
+## Technologies (not exhaustive!)
 
-## Resources
-
-### Project Updates
-
-Slides [here](https://docs.google.com/presentation/d/1JJEnThJ8J-kww_SiqMceNVPTG_3i5U472d_8RIgSb-o/edit#slide=id.p).
-
-### March 5 Presentation
-
-Slides [here](https://docs.google.com/presentation/d/1g28qdef5ddqo8jX7AW_3p60fzBnzMxD4_EPGpjcrWkU/edit#slide=id.p).
-
-### Final Presentation
-
-Slides [here](https://docs.google.com/presentation/d/1_AsMCNPxlaVB9atzXuxOjec1JGyA50DL5t6Grjlt5L8/edit#slide=id.p).
-
-### Repo Filepaths
-
-Try to use relative paths (`..`, etc.) when referencing other folders in this repository. Run scripts from the directory in which they are located. It's also recommended to clone the repository in `~/repo` (create a folder `repo` in whatever directory `~` references on your machine).
-
-### Box
-
-Base data for this project is kept on Box.
-
-For filepaths, access it using `"~/Box/STAT 222 Capstone"` to ensure code is usable across all machines.
-
-Some smaller files and final cleaned data files are kept in the `Data` folder.
-
-### Conda Environment
-
-The environment `capstone` can be found in [`environment.yml`](https://github.com/current12/Stat-222-Project/blob/main/environment.yml).
-
-To make yourself a copy of the environment, run `conda env create -f environment.yml`. To update the environment if the yaml changes, run `conda env update --name capstone --file environment.yml --prune`.
-
-If you have the environment activated, you can run `conda env export > environment.yml` while in this directory to update the yaml file.
+- Python
+  - Deep Graph Library
+  - spaCy
+  - NLTK
+  - Transformers
+  - Sklearn
+  - SciPy
+  - XGBoost
+  - SMOTE
+  - AutoGluon
+  - statsmodels
+  - Networkx, PyVis
+  - Dask
+  - Pandas
+  - PyArrow/Parquet
+  - Conda
+- Bash and the Slurm Cluster Resource Manager for CPUs and GPUs
+- Docker
